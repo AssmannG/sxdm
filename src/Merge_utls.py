@@ -18,6 +18,7 @@ from ascii import ASCII
 from dendro2highcharts import dendro2highcharts
 import dict_keys_template as dkt
 import correlation as corc
+import json
 
 
 logger = logging.getLogger('Scale&Merge')
@@ -88,9 +89,10 @@ class Merge_utls(object):
 			logger.info('OSError:{}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 
 		self.scale_results['merge_output_path'] = self.subadm
+		return
 
 	def sort_xtal(self, lists):
 		sortlist = [];
@@ -112,7 +114,7 @@ class Merge_utls(object):
 			logger.info('IndexError: {}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 		else:
 			msg = "# of xtals expected: %d\n" %len(self.input_paths)
 			logger.info('MSG: {}'.format(msg))
@@ -136,7 +138,7 @@ class Merge_utls(object):
 				self.scale_results['status'] = False
 				return self.scale_results
 		self.scale_results['xtals_found'] = len(self.hklpaths)
-		return self.scale_results
+		return
 
 
 	def create_file_links(self):
@@ -145,7 +147,7 @@ class Merge_utls(object):
 			logger.info('IndexError: {}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status;
-			return self.scale_results
+			return
 		for ii in range(len(self.hklpaths)):
 			try:
 				linkname = "xtal_"+str(ii)+".HKL"
@@ -163,7 +165,7 @@ class Merge_utls(object):
 					logger.info('Error:{}'.format(e))
 					self.status = False; self.scale_results['status'] = self.status
 					self.scale_results['info'].append(e)
-		return self.scale_results
+		return
 
 	def indexing_(self):
 		if  self.reference in [None,'None']:
@@ -172,12 +174,9 @@ class Merge_utls(object):
 		#ref_obj = ASCII(self.reference)
 		try:
 			for ii in range(1, len(self.hklpaths)):
-				#hkl_obj = ASCII(self.hklpaths[ii])
 				if not index_check.similar_symmetry(self.reference, self.hklpaths[ii]):
 					self.hklpaths.pop(ii)
-				#if space_group[hkl_obj.spg][1] != space_group[ref_obj.spg][1]:
 					logger.info("wrong indexing\n")
-					#self.hklpaths.pop(ii)
 				else:
 					pass
 				self.status = True
@@ -187,7 +186,7 @@ class Merge_utls(object):
 
 		logger.info('MSG: # of cleaned xtals %s' %len(self.hklpaths))
 		self.scale_results['xtals_after_idx_check'] = len(self.hklpaths)
-		return self.status
+		return
 
 
 	def create_inp(self, fList, **kwargs):
@@ -240,9 +239,10 @@ class Merge_utls(object):
 				fh.write("INPUT_FILE=%s\n" %f)
 				fh.write("MINIMUM_I/SIGMA=0.0\n")
 		fh.close()
+		return
 
 	def Isa_select(self, ISa_th):
-		#method to perform ISa based selection of 'good' HKL files for next round of XSCALEing
+		# method to perform ISa based selection of 'good' HKL files for next round of XSCALEing
 		if os.path.isfile("XSCALE.LP"):
 			fh = open("XSCALE.LP", 'r')
 			all_lines = fh.readlines()
@@ -258,7 +258,7 @@ class Merge_utls(object):
 				logger.info('Error: {}'.format(error))
 				self.scale_results['info'].append(error)
 				self.status = False; self.scale_results['status']=self.status
-				return self.scale_results
+				return
 
 			try:
 				for lines in Isa_list:
@@ -283,21 +283,20 @@ class Merge_utls(object):
 				logger.info('Error:{}'.format(e))
 				self.status = False; self.scale_results['status'] = self.status
 				self.scale_results['info'].append(e)
-				return self.scale_results
 		else:
 			err = "XSCALE.LP file does not exist"
 			logger.info('IOError: {}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
-		return self.scale_results
+
+		return
 
 	def xscale_for_sad(self):
 		self.find_HKLs()
-		if self.status == False:
+		if self.status is False:
 			logger.info('Error: no hkls found\n')
 			self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 		try:
 			self.outdir_make()
 			os.chdir(self.subadm)
@@ -337,9 +336,9 @@ class Merge_utls(object):
 
 			try:
 				state, stats = parse_xscale_output("XSCALE.LP")
-				if state == False:
+				if state is False:
 					self.status = False; self.scale_results['status'] = self.status
-					return self.scale_results
+					return
 				else:
 
 					logger.info('stat_dict:{}'.format(stats))
@@ -351,14 +350,14 @@ class Merge_utls(object):
 				logger.info('Error: {}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 
 	def xscale_for_sx(self):
 		self.find_HKLs()
 		if self.status == False:
 			logger.info('Error: no hkls found\n')
 			self.scale_results['status'] = False
-			return self.scale_results
+			return
 		try:
 			self.outdir_make()
 			os.chdir(self.subadm)
@@ -367,7 +366,7 @@ class Merge_utls(object):
 			logger.info('OSError:{}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 
 		try:
 			if len(self.hklpaths) < 1000:
@@ -377,27 +376,28 @@ class Merge_utls(object):
 				logger.info('MSG:{}'.format(MSG))
 				pass
 
-			state, self.reference = ref_choice(self.hklpaths, fom='rmeas')
-			state_rmeas, rmeas_sorted_hkls = rmeas_sorter(self.hklpaths)
-			if state == False and self.reference == None:
-				self.status = False; self.scale_results['status'] = self.status;
-				logging.info('Error: bfactor-based reference choice did not work')
-			elif state_rmeas == False and len(rmeas_sorted_hkls) == 0:
-				self.status = False; self.scale_results['status'] = False
-				logging.info('Error: Rmeas based ranking did not work')
+			# state, self.reference = ref_choice(self.hklpaths, fom='rmeas')
+			# state_rmeas, rmeas_sorted_hkls = rmeas_sorter(self.hklpaths)
+			# if state == False and self.reference == None:
+			# 	self.status = False; self.scale_results['status'] = self.status;
+			# 	logging.info('Error: bfactor-based reference choice did not work')
+			# elif state_rmeas == False and len(rmeas_sorted_hkls) == 0:
+			# 	self.status = False; self.scale_results['status'] = False
+			# 	logging.info('Error: Rmeas based ranking did not work')
+			#
+			# elif state == True and self.reference != None and len(rmeas_sorted_hkls) > 0:
+			# 	logging.info('lowest-Bfactor file: %s' %self.reference)
+			# 	ref_for_cell_sg = ASCII(self.reference)
+			# 	self.scale_results['space_group'] = space_group[ref_for_cell_sg.spg][0]
+			# 	self.scale_results['unit-cell'] = ref_for_cell_sg.unit_cell
+			# 	self.friedel = ref_for_cell_sg.anom
+			# 	self.hklpaths = rmeas_sorted_hkls
+			# 	self.create_file_links()
+			# 	self.create_inp(self.filelinks, refs=self.reference, reso=self.res_cut)
+			# else:
 
-			elif state == True and self.reference != None and len(rmeas_sorted_hkls) > 0:
-				logging.info('lowest-Bfactor file: %s' %self.reference)
-				ref_for_cell_sg = ASCII(self.reference)
-				self.scale_results['space_group'] = space_group[ref_for_cell_sg.spg][0]
-				self.scale_results['unit-cell'] = ref_for_cell_sg.unit_cell
-				self.friedel = ref_for_cell_sg.anom
-				self.hklpaths = rmeas_sorted_hkls
-				self.create_file_links()
-				self.create_inp(self.filelinks, refs=self.reference, reso=self.res_cut)
-			else:
-				self.create_file_links()
-				self.create_inp(self.filelinks)
+			self.create_file_links()
+			self.create_inp(self.filelinks, refs=self.reference, reso=self.res_cut)
 
 			msg = "Running 1st round of xscale-ing with Rmeas based ranking\n"
 			logger.info('MSG:{}'.format(msg))
@@ -409,7 +409,7 @@ class Merge_utls(object):
 				state, stats = parse_xscale_output("XSCALE.LP")
 				if state == False:
 					self.status = False; self.scale_results['status'] = self.status
-					return self.scale_results
+					return
 
 				logger.info('stat_dict:{}'.format(stats))
 				self.scale_results['no_selection'] = stats
@@ -422,7 +422,7 @@ class Merge_utls(object):
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
-				return self.scale_results
+				return
 
 
 			msg = "running xscale after ISa selection\n"
@@ -432,7 +432,7 @@ class Merge_utls(object):
 			try:
 				if self.status == False:
 					self.scale_results['status'] = self.status
-					return self.scale_results
+					return
 				state, stats = parse_xscale_output("XSCALE.LP")
 
 				logger.info('stat_dict:{}'.format(stats))
@@ -446,7 +446,7 @@ class Merge_utls(object):
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
-				return self.scale_results
+				return
 
 			celler = Cell(self.selected_files)
 			if len(celler.hkllist) > 200:
@@ -459,7 +459,7 @@ class Merge_utls(object):
 				self.scale_results['dendro_labels'] = celler.data_points
 			if celler.status == False:
 				self.status = False
-				return self.scale_results
+				return
 
 			mode_cells = {'a': celler.a_mode, 'b': celler.b_mode, 'c': celler.c_mode,
 						'al':celler.al_mode, 'be':celler.be_mode, 'ga': celler.ga_mode}
@@ -492,12 +492,12 @@ class Merge_utls(object):
 				logger.info('Error:{}'.format(e))
 				self.scale_results['info'].append(e)
 				self.status = False; self.scale_results['status'] = self.status
-				return self.scale_results
+				return
 			try:
 				state, stats = parse_xscale_output("XSCALE.LP")
 				if state == False:
 					self.status = False; self.scale_results['status'] = self.status
-					return self.scale_results
+					return
 
 				logger.info('stat_dict:{}'.format(stats))
 				self.scale_results['cell_selection'] = stats
@@ -510,7 +510,7 @@ class Merge_utls(object):
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
-				return self.scale_results
+				return
 			'''
 			pcc = pairCC('Cell_Select.LP')
 			pcc.get_cc_error_b()
@@ -541,7 +541,7 @@ class Merge_utls(object):
 				state, stats = parse_xscale_output("XSCALE.LP")
 				if state == False:
 					self.status = False; self.scale_results['status'] = self.status
-					return self.scale_results
+					return
 
 				logger.info('stat_dict:{}'.format(stats))
 				self.scale_results['pCC_selection'] = stats
@@ -554,14 +554,14 @@ class Merge_utls(object):
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
-				return self.scale_results
+				return
 		except Exception as e:
 			logger.info('Error: {}'.format(e))
 			self.scale_results['info'].append(e)
 			self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 
-		return self.scale_results
+		return
 
 	def isocluster(self, xscalefile):
 
@@ -578,7 +578,7 @@ class Merge_utls(object):
 			self.status = True; self.scale_results['status'] = self.status
 		else:
 			self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 
 		if os.path.isfile(os.path.join(self.subadm,"isocluster.log")):
 			fkey = "best number of clusters"
@@ -619,8 +619,8 @@ class Merge_utls(object):
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
-				return self.scale_results
-		return self.scale_results
+				return
+		return
 
 	def aniso_check(self):
 		point_cmd = "pointless -xdsin noSelect.HKL hklout noSelect_point.mtz"
@@ -661,7 +661,7 @@ class Merge_utls(object):
 			logger.info('aimless-error:{}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 		try:
 			fh = open("aimless.log", 'r')
 			_all = fh.readlines()
@@ -672,7 +672,7 @@ class Merge_utls(object):
 			logger.info('OSError:{}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
-			return self.scale_results
+			return
 
 		keyword = "Estimated maximum resolution limits"
 
@@ -701,7 +701,7 @@ class Merge_utls(object):
 					self.status = True; self.scale_results['status'] = self.status
 			else:
 				pass
-		return self.scale_results
+		return
 
 	def create_mtzs(self):
 		lst_of_hkls = ['noSelect.HKL', 'ISa_Select.HKL', 'Cell_Select.HKL', 'pCC_Select.HKL']
@@ -713,6 +713,7 @@ class Merge_utls(object):
 				logger.info('mtz-create-info:{}'.format('could not create mtz; file may not exist'))
 				pass
 		return
+
 	def run_(self):
 
 		try:
@@ -724,18 +725,16 @@ class Merge_utls(object):
 				state, stats = parse_xscale_output("ISa_Select.LP")
 				self.scale_results['ISa_selection'] = stats
 
-				return self.scale_results
 			elif self.expt == 'serial-xtal':
 				self.xscale_for_sx()
 				if self.status == True:
 					xscale = ASCII('noSelect.HKL')
 					xscale.multiplicity_check()
 					self.scale_results['multiplicity'] = xscale.mult_list
-					self.isocluster('noSelect.HKL')
+					# self.isocluster('noSelect.HKL')
 					self.aniso_check()
 					self.create_mtzs()
 
-				return self.scale_results
 			elif self.expt == 'inverse-beam' or self.expt == 'interleave-and-inverse-first':
 				pass
 			else:
@@ -746,8 +745,7 @@ class Merge_utls(object):
 			self.scale_results['status'] = False
 			logger.info('Error:{}'.format(e))
 			self.scale_results['info'].append(e)
-			return self.scale_results
-		return self.scale_results
+		return
 
 
 def finder(folder, method):
@@ -755,7 +753,7 @@ def finder(folder, method):
 
 	if expt == 'serial-xtal':
 		for ii in range(len(root)):
-			paths = glob.glob(os.path.join(root[ii], 'XDS_ASCII.HKL'))
+			paths = glob.glob(os.path.join(root[ii], '*', 'XDS_ASCII.HKL'))
 			path_list.append(paths)
 	elif expt == 'native-sad':
 		for ii in range(len(root)):
@@ -812,6 +810,20 @@ def _run_(hklpath, expt_type, username=None):
 		return success, merge_result
 	return success, merge_result
 
+def optargs():
+	import argparse
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--root", type=str, required=True,
+						help="provide parent folder, underwhich you have subfolders with XDS_ASCII files")
+	parser.add_argument("--expt", type=str, required=True,
+						help="provide experiment type – serial_xtal or native_sad")
+	parser.add_argument("--reference", type=str,
+						help="optionally, reference XDS_ASCII file can be provided")
+	parser.add_argument("--isa_cut", type=str, default='3.0')
+	parser.add_argument("--res_cut", type=str, default='2.2')
+	parser.add_argument("--friedel", type=str, default="FALSE")
+	args = parser.parse_args()
+	return args
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG,
@@ -819,18 +831,30 @@ if __name__ == '__main__':
 	datefmt='%y-%m-%d %H:%M',
 	filename='merge.log',
 	filemode='a+')
-	hklpath_list = finder(sys.argv[1], sys.argv[2])
-	#hklpath = get_paths_xscale()
-	hklpath = [];
+
+	op = optargs()
+	if op.root is not None and op.expt is not None:
+		hklpath_list = finder(op.root, op.expt)
+	else:
+		logger.error("command line arguments are missing, quit!")
+		sys.exit()
+
+	hklpath = []
 	for item in hklpath_list:
 		for val in item:
 			hklpath.append(val)
+    op_dict = dict()
 
-	scale = Merge_utls(hklpath, sys.argv[2])
-	results = scale.run_()
-	with open('example.dict', 'w') as ofh:
-		for k, v in results.iteritems():
-			ofh.write("%s: \t %s\n" %(k,v))
-	ofh.close()
+	if op.reference is not None:
+		op_dict['reference'] = op.reference
+	op_dict['isa_cut'] = op.isa_cut
+	op_dict['res_cut'] = op.res_cut
+	op_dict['friedel'] = op.friedel
+
+	mm = Merge_utls(hklpath, op.expt, **op_dict)
+	mm.run_()
+	with open('Mergeing_results.json', 'w') as ofh:
+		ofh.write(json.dump(mm.scale_results, indent=4))
+
 
 	#_run_('SX', 'e14365')
