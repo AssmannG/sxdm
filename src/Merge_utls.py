@@ -816,7 +816,7 @@ def optargs():
 	parser.add_argument("--root", type=str, required=True,
 						help="provide parent folder, underwhich you have subfolders with XDS_ASCII files")
 	parser.add_argument("--expt", type=str, required=True,
-						help="provide experiment type – serial_xtal or native_sad")
+						help="provide experiment type - serial_xtal or native_sad")
 	parser.add_argument("--reference", type=str,
 						help="optionally, reference XDS_ASCII file can be provided")
 	parser.add_argument("--isa_cut", type=str, default='3.0')
@@ -843,7 +843,7 @@ if __name__ == '__main__':
 	for item in hklpath_list:
 		for val in item:
 			hklpath.append(val)
-    op_dict = dict()
+        op_dict = dict()
 
 	if op.reference is not None:
 		op_dict['reference'] = op.reference
