@@ -854,7 +854,7 @@ if __name__ == '__main__':
 	mm = Merge_utls(hklpath, op.expt, **op_dict)
 	mm.run_()
 	with open('Mergeing_results.json', 'w') as ofh:
-		ofh.write(json.dump(mm.scale_results, indent=4))
+		ofh.write(json.dumps(mm.scale_results, indent=4))
 
 
 	#_run_('SX', 'e14365')
