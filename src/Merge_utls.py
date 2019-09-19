@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 created by S.Basu
 On 26-June-2017
@@ -85,7 +86,7 @@ class Merge_utls(object):
 				pass
 
 		except OSError:
-			err = OSError("adm folder either not there or not accessible\n")
+			err = "adm folder either not there or not accessible\n"
 			logger.info('OSError:{}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
@@ -110,7 +111,7 @@ class Merge_utls(object):
 
 	def find_HKLs(self):
 		if not self.input_paths:
-			err = IndexError("no hkl filename provided\n")
+			err = "no hkl filename provided\n"
 			logger.info('IndexError: {}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
@@ -143,7 +144,7 @@ class Merge_utls(object):
 
 	def create_file_links(self):
 		if len(self.hklpaths) == 0:
-			err = IndexError("no hkl filenames exist")
+			err = "no hkl filenames exist"
 			logger.info('IndexError: {}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status;
@@ -254,7 +255,7 @@ class Merge_utls(object):
 				Isa_list = all_lines[start+1:end-3]
 				self.status = True
 			except (ValueError, IndexError) as err:
-				error = err("check if XSCALE ran properly or XSCALE.INP screwed up \n")
+				error = "check if XSCALE ran properly or XSCALE.INP screwed up \n"
 				logger.info('Error: {}'.format(error))
 				self.scale_results['info'].append(error)
 				self.status = False; self.scale_results['status']=self.status
@@ -301,7 +302,7 @@ class Merge_utls(object):
 			self.outdir_make()
 			os.chdir(self.subadm)
 		except OSError:
-			err = OSError("adm folder either not there or not accessible\n")
+			err = "adm folder either not there or not accessible\n"
 			logger.info('OSError:{}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
@@ -362,7 +363,7 @@ class Merge_utls(object):
 			self.outdir_make()
 			os.chdir(self.subadm)
 		except OSError:
-			err = OSError("adm folder either not there or not accessible\n")
+			err = "adm folder either not there or not accessible\n"
 			logger.info('OSError:{}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
@@ -418,7 +419,7 @@ class Merge_utls(object):
 				shutil.copyfile("XSCALE.HKL", "noSelect.HKL")
 				self.status = True; self.scale_results['status'] = self.status
 			except OSError:
-				err = OSError("xscaling may not have run\n")
+				err = "xscaling may not have run\n"
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
@@ -442,7 +443,7 @@ class Merge_utls(object):
 				shutil.copyfile("XSCALE.HKL", "ISa_Select.HKL")
 				self.status = True; self.scale_results['status'] = self.status
 			except OSError:
-				err = OSError("xscaling after ISa selection may not work\n")
+				err = "xscaling after ISa selection may not work\n"
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
@@ -451,11 +452,11 @@ class Merge_utls(object):
 			celler = Cell(self.selected_files)
 			if len(celler.hkllist) > 200:
 				celler.cell_analysis()
-				self.scale_results['cell_array'] = celler.cell_ar
+				self.scale_results['cell_array'] = celler.cell_ar.tolist()
 				self.scale_results['histogram'] = celler.dict_for_histogram()
 			else:
 				celler.clustering()
-				self.scale_results['cell_array'] = celler.cell_ar_best_cluster
+				self.scale_results['cell_array'] = celler.cell_ar_best_cluster.tolist()
 				self.scale_results['dendro_labels'] = celler.data_points
 			if celler.status == False:
 				self.status = False
@@ -464,11 +465,11 @@ class Merge_utls(object):
 			mode_cells = {'a': celler.a_mode, 'b': celler.b_mode, 'c': celler.c_mode,
 						'al':celler.al_mode, 'be':celler.be_mode, 'ga': celler.ga_mode}
 
-			self.scale_results['unit-cell'] = mode_cells;
+			self.scale_results['unit-cell'] = mode_cells
 			#convert dendro dictionary for easy plottable dictionary in adp tracker
 			try:
 				self.scale_results['cell_dendrogram'] = dendro2highcharts(celler.dendo)
-				self.scale_results['hclust_matrix'] = celler.hclust_matrix
+				# self.scale_results['hclust_matrix'] = celler.hclust_matrix
 				self.scale_results['cell_n_clusters'] = celler.n_clusters_cell
 			except Exception as e:
 				logger.info('skipping-dendro-cell:{}'.format(e))
@@ -506,17 +507,12 @@ class Merge_utls(object):
 				shutil.copyfile("XSCALE.HKL", "Cell_Select.HKL")
 				self.status = True; self.scale_results['status'] = self.status
 			except OSError:
-				err = OSError("xscaling after Cell selection may not work\n")
+				err = "xscaling after Cell selection may not work\n"
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
 				return
-			'''
-			pcc = pairCC('Cell_Select.LP')
-			pcc.get_cc_error_b()
-			pcc.pair_corr_sorter()
-			self.hkl_cc_sorted = pcc.hkl_cc_sorted
-			'''
+
 			CC = corc.CC_estimator('ISa_Select.HKL')
 			logger.info('ASCII loaded')
 			CC.cc_select('ISa_Select.LP', fom='pcc')
@@ -550,7 +546,7 @@ class Merge_utls(object):
 				shutil.copyfile("XSCALE.HKL", "pCC_Select.HKL")
 				self.status = True; self.scale_results['status'] = self.status
 			except OSError:
-				err = OSError("xscaling after pair-correlation selection may not work\n")
+				err = "xscaling after pair-correlation selection may not work\n"
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
@@ -615,7 +611,7 @@ class Merge_utls(object):
 				self.scale_results['iso-cluster'] = stats
 				self.status = True; self.scale_results['status'] = self.status
 			except OSError:
-				err = OSError("xscaling after iso-clustering may not work\n")
+				err = "xscaling after iso-clustering may not work\n"
 				logger.info('OSError:{}'.format(err))
 				self.scale_results['info'].append(err)
 				self.status = False; self.scale_results['status'] = self.status
@@ -668,7 +664,7 @@ class Merge_utls(object):
 			fh.close(); self.status = True;
 			self.scale_results['status'] = self.status
 		except OSError, IOError:
-			err = OSError("aimless.log file doesn't exist")
+			err = "aimless.log file doesn't exist"
 			logger.info('OSError:{}'.format(err))
 			self.scale_results['info'].append(err)
 			self.status = False; self.scale_results['status'] = self.status
@@ -843,7 +839,7 @@ if __name__ == '__main__':
 	for item in hklpath_list:
 		for val in item:
 			hklpath.append(val)
-    op_dict = dict()
+	op_dict = dict()
 
 	if op.reference is not None:
 		op_dict['reference'] = op.reference
