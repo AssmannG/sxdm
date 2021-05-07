@@ -50,11 +50,11 @@ class Merge_utls(object):
 		self.scale_results['method'] = self.expt
 
 	def outdir_make(self):
-		if self.suffix:
-			outname = 'adm_'+self.expt+'_'+self.suffix
-		else:
-			logger.info('MSG:{}'.format('suffix was not found'))
-			outname = 'adm_'+self.expt
+		#if self.suffix:
+		#	outname = 'adm_'+self.expt+'_'+self.suffix
+		#else:
+		#	logger.info('MSG:{}'.format('suffix was not found'))
+		outname = 'adm_'+self.expt
 		if self.running_folder != None:
 			self.running_folder = os.path.abspath(self.running_folder)
 			if os.path.isdir(self.running_folder):
@@ -79,6 +79,10 @@ class Merge_utls(object):
 		try:
 			os.chdir(self.output)
 			self.subadm = 'adm_'+str(self.datasetCount)
+                        if self.suffix:
+                           self.subadm = self.subadm + "_" + self.suffix
+                        else:
+                           logger.info('MSG:{}'.format('suffix was not found'))
 			self.subadm = os.path.join(self.output, self.subadm)
 			if not os.path.exists(self.subadm):
 				os.makedirs(self.subadm, 0755)
@@ -233,12 +237,12 @@ class Merge_utls(object):
 		if 'reso' in kwargs.keys():
 			for f in fList:
 				fh.write("INPUT_FILE=%s\n" %f)
-				fh.write("MINIMUM_I/SIGMA=0.0\n")
+				fh.write("SNRC=0.0\n")
 				fh.write("INCLUDE_RESOLUTION_RANGE= 50 %f\n" %float(reso))
 		else:
 			for f in fList:
 				fh.write("INPUT_FILE=%s\n" %f)
-				fh.write("MINIMUM_I/SIGMA=0.0\n")
+				fh.write("SNRC=0.0\n")
 		fh.close()
 		return
 
@@ -745,11 +749,11 @@ class Merge_utls(object):
 
 
 def finder(folder, method):
-	root = folder.split(); expt = method; path_list =[];
-
+	root = folder; expt = method; path_list =[];
+	print root
 	if expt == 'serial-xtal':
 		for ii in range(len(root)):
-			paths = glob.glob(os.path.join(root[ii], '*', 'XDS_ASCII.HKL'))
+			paths = glob.glob(os.path.join(root[ii], '*', '*/XDS_ASCII.HKL'))
 			path_list.append(paths)
 	elif expt == 'native-sad':
 		for ii in range(len(root)):
@@ -809,15 +813,16 @@ def _run_(hklpath, expt_type, username=None):
 def optargs():
 	import argparse
 	parser = argparse.ArgumentParser()
-	parser.add_argument("--root", type=str, required=True,
+	parser.add_argument("--root", type=str, required=True, nargs="+",
 						help="provide parent folder, underwhich you have subfolders with XDS_ASCII files")
 	parser.add_argument("--expt", type=str, required=True,
-						help="provide experiment type – serial_xtal or native_sad")
+						help="provide experiment type e.g. serial_xtal or native_sad")
 	parser.add_argument("--reference", type=str,
 						help="optionally, reference XDS_ASCII file can be provided")
 	parser.add_argument("--isa_cut", type=str, default='3.0')
 	parser.add_argument("--res_cut", type=str, default='2.2')
-	parser.add_argument("--friedel", type=str, default="FALSE")
+	parser.add_argument("--friedel", type=str, default="TRUE")
+        parser.add_argument("--suffix", type=str, default="")
 	args = parser.parse_args()
 	return args
 
@@ -829,6 +834,7 @@ if __name__ == '__main__':
 	filemode='a+')
 
 	op = optargs()
+        print(op.root)
 	if op.root is not None and op.expt is not None:
 		hklpath_list = finder(op.root, op.expt)
 	else:
@@ -836,6 +842,7 @@ if __name__ == '__main__':
 		sys.exit()
 
 	hklpath = []
+	print hklpath_list
 	for item in hklpath_list:
 		for val in item:
 			hklpath.append(val)
@@ -843,9 +850,11 @@ if __name__ == '__main__':
 
 	if op.reference is not None:
 		op_dict['reference'] = op.reference
+
 	op_dict['isa_cut'] = op.isa_cut
 	op_dict['res_cut'] = op.res_cut
 	op_dict['friedel'] = op.friedel
+        op_dict['suffix'] = op.suffix
 
 	mm = Merge_utls(hklpath, op.expt, **op_dict)
 	mm.run_()

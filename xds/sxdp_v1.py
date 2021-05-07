@@ -161,6 +161,7 @@ class Xtal(object):
 				self.content['nodes'] = "x06sa-cn-117 x06sa-cn-118 x06sa-cn-119 x06sa-cn-120 x06sa-cn-121 x06sa-cn-122 x06sa-cn-123 x06sa-cn-124"
 			elif os.environ['BEAMLINE_XNAME'] == 'X06DA':
 				self.content['nproc'] = 12
+				self.content['njobs'] = 1
 				self.content['nodes'] = "x06da-cn-1 x06da-cn-2"
 			elif os.environ['BEAMLINE_XNAME'] == 'X10SA':
 				self.content['nproc'] = 12
@@ -224,10 +225,10 @@ class Xtal(object):
 	def check_allfiles(self):
 		if self.beamline == 'PXII' or self.beamline == 'PXIII':
 			if len(str(self.content['numFrames'])) == 3:
-				tmp_str = '00'+str(self.content['numFrames'])
+				tmp_str = '0'+str(self.content['numFrames'])
 			else:
 				tmp_str = '0'+str(self.content['numFrames'])
-			lastImage = self.content['xtalname'].strip('?????.cbf')+tmp_str+'.cbf'
+			lastImage = self.content['xtalname'].strip('????.cbf')+tmp_str+'.cbf'
 			wait_max = self.content['numFrames']*10
 			wait = 0;
 			while not os.path.exists(lastImage):
@@ -282,7 +283,7 @@ class Process(object):
 			print "No image folder found \n"
 			return
 		for ii in range(len(self.data_folder)):
-			for dirs in sorted(glob.glob(os.path.join(self.data_folder[ii], "*set*"))):
+			for dirs in sorted(glob.glob(os.path.join(self.data_folder[ii], "*"))):
 				if os.path.isdir(dirs) and len(os.listdir(dirs)) > 2:
 					self.setfolder.append(dirs)
 		return

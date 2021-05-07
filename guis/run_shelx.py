@@ -4,7 +4,7 @@ by basu_s
 '''
 import os, sys
 import subprocess as sub
-from ascii import ASCII
+#from ascii import ASCII
 import shutil
 #import fnmatch
 
@@ -12,8 +12,9 @@ class prepfiles(object):
     def __init__(self, ref_file, symm):
         self.ref_file = ref_file;
         if not self.ref_file.endswith('.sca'):
-            self.hkl = ASCII(self.ref_file)
-            self.cell = self.hkl.header['!UNIT_CELL_CONSTANTS']
+            #self.hkl = ASCII(self.ref_file)
+            #self.cell = self.hkl.header['!UNIT_CELL_CONSTANTS']
+            self.cell = sub.check_output(["grep '!UNIT_CELL_CONSTANTS' "+self.ref_file + " | awk '{print $2,$3,$4,$5,$6,$7}'"], shell=True) 
         else:
 
             self.cell = sub.check_output(["cat "+self.ref_file + " | awk 'NR>2 && NR<4 {print $1, $2, $3, $4, $5, $6}'"], shell=True)
@@ -138,7 +139,7 @@ class running(object):
                         self.pp.create_copies(base_c, project)
                         self.pp.shelxd_input(outname, inname_d_4m_c,site,r,ntry,emin)
                         self.write_script(name, logname)
-                        sub.call(["sbatch -p day -J shelx run_cluster"], shell=True)
+                        sub.call(["sbatch -p mx -J shelx run_cluster"], shell=True)
                         job_cnt += 1
         print "%d Jobs have been submitted" %job_cnt
 
