@@ -69,11 +69,12 @@ class Reprocess(object):
       def getOutputDirectory(self):
           return self._ioDict['WorkingDirectory']
 
+      @property
       def datadir_search(self):
           datadir = pathlib.Path(self.jshandle['raw_data'])
           listofImageFolders = []
           if datadir.exists():
-             imagelist = os.listdir(p)
+             imagelist = os.listdir(str(datadir))
              if len(imagelist) > 0:
                 for imagefolder in imagelist:
                     listofImageFolders.append(str(datadir / imagefolder))
@@ -135,7 +136,7 @@ class Reprocess(object):
                data_range=re.compile(r'DATA_RANGE=\s(?P<data_range>.*)\n'),
                beam=re.compile(r'ORGX=\s(?P<beam>.*)\n'),
                osc_range=re.compile(r'OSCILLATION_RANGE=\s(?P<osc_range>([0-9.]+))\n'))
-          with open(fname, 'r') as fh:
+          with open(str(fname), 'r') as fh:
                for line in fh:
                    for k, pat in rex_dict.items():
                        match = pat.search(line)
@@ -175,7 +176,7 @@ class Reprocess(object):
           xds_string = xds_input.INP[self.jshandle.get('beamline', 'ID23-2')]
           new_xds_path = pathlib.Path(os.path.join(os.getcwd(), 'XDS.INP'))
           if not new_xds_path.exists():
-             fh = open(new_xds_path, 'w')
+             fh = open(str(new_xds_path), 'w')
              try:
                fh.write(xds_string.format(**xds_inData))
                fh.close()
@@ -197,7 +198,7 @@ class Reprocess(object):
           if new_xds_path.exists():
              shutil.copy('XDS.INP', 'Indexing.INP')
              try:
-               fh = open(new_xds_path, 'w')
+               fh = open(str(new_xds_path), 'w')
                fh.write(xds_string.format(**xds_inData))
                fh.close()
              except Exception as err:

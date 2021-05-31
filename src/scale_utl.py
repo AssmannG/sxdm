@@ -1,148 +1,137 @@
-'''
-created by S.Basu
-On 28-July-2017
-'''
+
+__author__ = ["S. Basu"]
+__license__ = "M.I.T"
+__date__ = "28/07/2017"
+__refactordate__ = "10/05/2021"
+
 import os, sys,glob
 import logging
-import subprocess as sub
-import correct
+from abstract import Abstract
+from xscale_output import OutputParser
 
-logger = logging.getLogger('Scale&Merge')
+logger = logging.getLogger('sxdm')
 
-def find_corrects(hklpaths):
-	corr_paths = []
-	for fname in hklpaths:
-		folder = os.path.dirname(fname)
-		path = os.path.join(folder, 'CORRECT.LP')
-		if os.path.isfile(path):
-			corr_paths.append(path)
-			status = True
-		else:
-			logger.info('CORRECT.LP could not be found in %s' %folder)
-			status = False
-			return status, corr_paths
-	return status, corr_paths
+class ScaleUtils(Abstract):
 
-def check_bfactor(hklpaths):
-	status, corr_paths = find_corrects(hklpaths)
-	bfac_dicts = {}; sort_bfac_xasci = []
-	if len(corr_paths) == 0:
-		err = 'ValueError: no CORRECT.LP found'
-		logger.info('ValueError: {}'.format(err))
-		status = False;
-		return status, sort_bfac_xasci
-	else:
-		for fname, cor_name in zip(hklpaths, corr_paths):
-			fh = open(cor_name, 'r')
-			_all = fh.readlines()
-			fh.close()
-			xasci = fname
-			for lines in _all:
-				if "WILSON LINE" in lines:
-					line = lines.split()
-					try:
-						bfac_dicts[xasci] = float(line[9])
-					except Exception:
-						logger.info('B-factor might be negative, not considered')
-				else:
-					pass
-			status = True
+    def find_corrects(self, inData):
+        try:
+            for fname in inData['listofHKLfiles']:
+                folder = os.path.dirname(fname)
+                path = os.path.join(folder, 'CORRECT.LP')
+                if os.path.isfile(path):
+                    self.results['listofCORRECTfiles'].append(path)
 
-		sort_bfac_xasci = sorted(bfac_dicts.items(), key=lambda x : x[1])
-	return status, sort_bfac_xasci
+                else:
+                    logger.info('CORRECT.LP could not be found in %s' %folder)
+                    self.setFailure()
+        except KeyError:
+            self.setFailure()
+        return
 
-def rank_rmeas(hklpaths):
-	status, corr_paths = find_corrects(hklpaths)
-	rmeas_dict = {}; sort_rmeas_xasci = []
-	if len(corr_paths) == 0:
-		err = 'ValueError: no CORRECT.LP found'
-		logger.info('ValueError: {}'.format(err))
-		status = False;
-		return status, sort_rmeas_xasci
-	else:
-		for fname, cor_name in zip(hklpaths, corr_paths):
-			state, correct_stat = correct.parse_xds_stats(cor_name)
-			if state == True and len(correct_stat) > 0:
-				mean_rmeas = correct.mean_rmeas_calc(correct_stat)
-				rmeas_dict[fname] = mean_rmeas
-				status = True
-			else:
-				err = "%s could not be read, please check the file" %cor_name
-				logger.info('Error: {}'.format(err))
-				statue = False
-				return status, sort_rmeas_xasci
+    def check_bfactor(self, inData):
+        self.find_corrects(inData)
+        bfac_dicts = {}
 
-		sort_rmeas_xasci = sorted(rmeas_dict.items(), key=lambda x:x[1])
-	return status, sort_rmeas_xasci
+        if len(self.results['listofCORRECTfiles']) == 0:
+            err = 'ValueError: no CORRECT.LP found'
+            logger.info('ValueError: {}'.format(err))
+
+        else:
+            for fname, cor_name in zip(inData['listofHKLfiles'], self.results['listofCORRECTfiles']):
+                fh = open(cor_name, 'r')
+                _all = fh.readlines()
+                fh.close()
+                xasci = fname
+                for lines in _all:
+                    if "WILSON LINE" in lines:
+                        line = lines.split()
+                        try:
+                            bfac_dicts[xasci] = float(line[9])
+                        except Exception:
+                            logger.info('B-factor might be negative, not considered')
+                    else:
+                        pass
+
+            self.results['bfac_sorted_hkls'] = sorted(bfac_dicts.items(), key=lambda x : x[1])
+        return
+
+    def rank_rmeas(self, inData):
+        self.find_corrects(inData)
+        rmeas_dict = {}
+
+        if len(self.results['listofCORRECTfiles']) == 0:
+            err = 'ValueError: no CORRECT.LP found'
+            logger.info('ValueError: {}'.format(err))
+        else:
+            for fname, cor_name in zip(inData['listofHKLfiles'], self.results['listofCORRECTfiles']):
+                indict = {'CORRECT_file': cor_name}
+                correct_parse = OutputParser(indict)
+                correct_parse.parse_xds_stats(cor_name)
+                mean_rmeas = correct_parse.mean_rmeas_calc(correct_parse.results['xds_stat'])
+                rmeas_dict[fname] = mean_rmeas
+
+            self.results['rmeas_sorted_hkls'] = sorted(rmeas_dict.items(), key=lambda x:x[1])
+        return
 
 
-def ref_choice(hklpaths, fom='bfac'):
-	reference = None;
-	if fom == 'bfac':
-		status, sort_bfac_hkls = check_bfactor(hklpaths)
-		if status == False and len(sort_bfac_hkls) == 0:
-			return status, reference
-		if status == True and len(sort_bfac_hkls) > 0:
-			try:
-				reference = sort_bfac_hkls[0][0]
-			except IndexError, ValueError:
-				err = 'bfactor selection may not work'
-				logger.info('Error:{}'.format(err))
-				status = False
-				return status, reference
-			return status, reference
-	elif fom == 'rmeas':
-		status, sort_rmeas_xasci = rank_rmeas(hklpaths)
-		if status == False and len(sort_rmeas_xasci) == 0:
-			return status, reference
-		if status == True and len(sort_rmeas_xasci) > 0:
-			try:
-				reference = sort_rmeas_xasci[0][0]
-			except IndexError, ValueError:
-				err = 'Rmeas based referenceing may not have worked'
-				logger.info('Error:{}'.format(err))
-				status = False
-				return status, reference
-			return status, reference
-	else:
-		pass
+    def ref_choice(self, inData):
+        reference = None
+        if inData['fom'] == 'bfac':
+            self.check_bfactor(inData)
+            try:
+                reference = self.results['bfac_sorted_hkls'][0][0]
+            except (IndexError, ValueError):
+                err = 'bfactor selection may not work'
+                logger.error(err)
+                self.setFailure()
+            return
 
-def Bfact_sorter(hklpaths):
-	bfac_sorted_hkls = [];
-	status, sort_bfac_ascii = check_bfactor(hklpaths)
-	if status == False and len(sort_bfac_ascii) == 0:
-		return status, bfac_sorted_hkls
-	elif status == True and len(sort_bfac_ascii) > 0:
-		for i in range(len(sort_bfac_ascii)):
-			bfac_sorted_hkls.append(sort_bfac_ascii[i][0])
-		status = True
-		return status, bfac_sorted_hkls
-	else:
-		status = False
-		err = "Bfactor selection may have some problem,check"
-		logging.info('Error:{}'.format(err))
-		return status, bfac_sorted_hkls
+        elif inData['fom'] == 'rmeas':
+            self.rank_rmeas(inData)
+            try:
+                reference = self.results['rmeas_sorted_hkls'][0][0]
+            except (IndexError, ValueError):
+                err = 'Rmeas based referenceing may not have worked'
+                logger.error(err)
+                self.setFailure()
+        else:
+            pass
+        self.results['reference'] = reference
 
-def rmeas_sorter(hklpaths):
-	rmeas_sorted_hkls = [];
-	status, sort_rmeas_xasci = rank_rmeas(hklpaths)
-	if status == False and len(sort_rmeas_xasci) == 0:
-		return status, rmeas_sorted_hkls
-	elif status == True and len(sort_rmeas_xasci) > 0:
-		for i in range(len(sort_rmeas_xasci)):
-			rmeas_sorted_hkls.append(sort_rmeas_xasci[i][0])
-		status = True
-		return status, rmeas_sorted_hkls
-	else:
-		status = False
-		err = "Rmeas based sorting did not work, check"
-		logger.info("Error:{}".format(err))
-		return status, rmeas_sorted_hkls
+    def Bfact_sorter(self, inData):
+        bfac_sorted_hkls = []
+        self.check_bfactor(inData)
+        if len(self.results['bfac_sorted_hkls']) > 0:
+            for i in range(len(self.results['bfac_sorted_hkls'])):
+                bfac_sorted_hkls.append(self.results['bfac_sorted_hkls'][i][0])
+        else:
+            err = "Rmeas based sorting did not work, check"
+            logger.error(err)
+            self.setFailure()
+
+        self.results['bfact_sorted_hkls'] = bfac_sorted_hkls
+        return
+
+    def rmeas_sorter(self, inData):
+        rmeas_sorted_hkls = []
+        self.rank_rmeas(inData)
+        if len(self.results['rmeas_sorted_hkls']) > 0:
+            for i in range(len(self.results['rmeas_sorted_hkls'])):
+                rmeas_sorted_hkls.append(self.results['rmeas_sorted_hkls'][i][0])
+        else:
+            err = "Rmeas based sorting did not work, check"
+            logger.error(err)
+            self.setFailure()
+        self.results['rmeas_sorted_hkls'] = rmeas_sorted_hkls
+        return
 
 def main():
-	hklpaths = glob.glob(os.path.join(sys.argv[1], 'XDS_ASCII.HKL'))
-	state, hkls = rmeas_sorter(hklpaths)
-	print hkls
+    hklpaths = glob.glob(os.path.join(sys.argv[1], 'XDS_ASCII.HKL'))
+    inData = dict()
+    inData['listofHKLfiles'] = hklpaths
+    sc = ScaleUtils(inData)
+    sc.rmeas_sorter(inData)
+    print(sc.results['rmeas_sorted_hkls'])
 
 if __name__ == '__main__':
-	main()
+    main()
