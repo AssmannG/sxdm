@@ -6,7 +6,7 @@ __refactordate__ = "07/05/2021"
 
 import os, sys
 import logging
-from abstract import Abstract
+from src.abstract import Abstract
 
 logger = logging.getLogger('sxdm')
 
@@ -23,6 +23,7 @@ class OutputParser(Abstract):
         }
 
     def parse_xds_stats(self, inData):
+        self.results['xds_stat'] = []
         count = 1
         skip_string = ['RESOLUTION', 'LIMIT']
         search_string = ' SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE >= -3.0 AS FUNCTION OF RESOLUTION\n'
@@ -42,7 +43,7 @@ class OutputParser(Abstract):
         _all = fh.readlines()
         fh.close()
         start_idx = [idx for idx, search in enumerate(_all) if search == search_string]
-        useful = _all[start_idx[-1]+1:start_idx[-1]+8] # get only last chunk of statistics tables
+        useful = _all[start_idx[-1]+1:start_idx[-1]+13] # get only last chunk of statistics tables
 
         for lines in useful:
             if any(k in lines for k in skip_string):
@@ -79,6 +80,7 @@ class OutputParser(Abstract):
 
 
     def parse_xscale_output(self, inData):
+        self.results['stat'] = []
         count = 1
         try:
             filename = inData['LPfile']
@@ -204,10 +206,10 @@ class OutputParser(Abstract):
             logger.error("run parse_xscale_output to generate self.results; then call this function with correct argument \n")
 
     @staticmethod
-    def print_table(inData):
-        if inData['stat']:
+    def print_table(stat):
+        if stat:
             print('Resolution   observed    unique   possible  completeness      Robs      Rexpect   compared  I/sig      Rmeas     CC1/2   CCano  anom_comp  sig_ano')
-            for row in inData['stat']:
+            for row in stat:
                 print("%6.2f %12d %10d %10d %12.1f %11.1f %11.1f %9d %8.1f %10.1f %9.1f %7.1f %8d %9.3f"\
                     %(row['resolution_limit'], row['observed_reflections'], \
                     row['unique_reflections'], row['possible_reflections'], \
@@ -225,8 +227,9 @@ if __name__ == '__main__':
     filename='stats.log',
     filemode='w')
 
-    indict = {"LPfile": sys.argv[1]}
+    indict = {"CORRECT_file": '/nfs/ssx/shbasu/MEmmery/processed/proc_20201029/AD029A/atx_01/xtal_0/CORRECT.LP'}
     xscale = OutputParser(indict)
-    xscale.parse_xscale_output(indict)
-    xscale.print_table(xscale.results)
+    xscale.parse_xds_stats(indict)
+    print(xscale.results['xds_stat'])
+    xscale.print_table(xscale.results['xds_stat'])
 

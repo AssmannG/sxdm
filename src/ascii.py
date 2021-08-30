@@ -5,9 +5,9 @@ __refactordate__ =  "11/05/2021"
 import time
 import errno
 import re
-from run_command import *
+from src.run_command import *
 import subprocess as sub
-from abstract import Abstract
+from src.abstract import Abstract
 
 
 logger = logging.getLogger("sxdm")
@@ -89,6 +89,13 @@ class ASCII(Abstract):
 
 
     def readfile(self, inData):
+        self.results['header'] = dict()
+        self.results['input_files'] = dict()
+        self.results['unit_cell'] = dict()
+        self.results['indices'] = []
+        self.results['iobs'] = []
+        self.results['sigI'] = []
+
         fname = inData['xds_ascii']
         fh = open(fname, 'r')
         _all = fh.readlines()
@@ -106,14 +113,16 @@ class ASCII(Abstract):
             if lines.startswith("! ISET"):
                 params = dict(kwd.findall(lines))
                 iset = int(params['ISET'])
-                if iset not in self.results['input_files']:
-                    self.results['input_files'][iset] = [None, None]
+
+
                 if "INPUT_FILE" in params:
-                    self.results['input_files'][iset][0] = params["INPUT_FILE"]
-                elif "X-RAY_WAVELENGTH" in params:
-                    self.results['input_files'][iset][1] = params["X-RAY_WAVELENGTH"]
+                    self.results['input_files'][iset] = params["INPUT_FILE"]
+                # elif "X-RAY_WAVELENGTH" in params:
+                #     self.results['input_files'][iset][1] = params["X-RAY_WAVELENGTH"]
                 else:
                     pass
+
+
             elif "!" in lines:
                 lst = kwd.findall(lines)
                 try:
@@ -137,24 +146,26 @@ class ASCII(Abstract):
 
     def _extract(self):
         try:
-            self.results['anom'] = self.results['header']["FRIEDEL'S_LAW"]
+            self.results['anom'] = self.results['header']["FRIEDEL'S_LAW"].strip(' ')
             self.results['spg'] = self.results['header']["!SPACE_GROUP_NUMBER"]
             cell = self.results['header']["!UNIT_CELL_CONSTANTS"]
             cell = cell.split()
             self.results['unit_cell']['a'] = cell[0]
             self.results['unit_cell']['b'] = cell[1]
             self.results['unit_cell']['c'] = cell[2]
-            self.results['unit_cell']['al'] =cell[3]
+            self.results['unit_cell']['al'] = cell[3]
             self.results['unit_cell']['be'] = cell[4]
             self.results['unit_cell']['ga'] = cell[5]
             #cctbx crystal symmetry into flex array type
-            a, b, c, al, be, ga = map(lambda x:float(x), self.results['unit_cell'])
+            a, b, c, al, be, ga = map(lambda x:float(x), cell)
             self.results['symm'] = crystal.symmetry(unit_cell=(a, b, c, al, be, ga), space_group=int(self.results['spg']))
 
-            self.results['wave'] = self.results['header']["!X-RAY_WAVELENGTH"]
+            self.results['wave'] = self.results['header']['!X-RAY_WAVELENGTH']
         except (KeyError, IndexError) as e:
-            err = "ASCII-class: could be XSCALE file or check file for keyErrors\n"
-            logger.info(err)
+            # err = "ASCII-class: could be XSCALE file or check file for keyErrors\n"
+            pass
+            # logger.info(e)
+        return
 
     def create_miller_set(self):
         if self.results['anom'] == "TRUE":
@@ -167,14 +178,10 @@ class ASCII(Abstract):
         return miller.set(crystal_symmetry=self.results['symm'], indices=self.results['indices'], anomalous_flag=anom_flag)
 
     def i_obs(self):
-        iobs = flex.double()
         array_info = miller.array_info(source_type="xds_ascii")
-        try:
-            iobs = miller.array(self.create_miller_set(),
+        iobs = miller.array(self.create_miller_set(),
                             data=self.results['iobs'], sigmas=self.results['sigI']).set_info(array_info).set_observation_type_xray_intensity()
-        except KeyError as err:
-            logger.error(err)
-            self.setFailure()
+
         return iobs
 
     def multiplicity_check(self):
@@ -211,7 +218,7 @@ class ASCII(Abstract):
                     logger.info('xdsconv-error:{}'.format(e))
         else:
             logger.info('xdsconv_error:{}'.format('file does not exist'))
-            return
+
         namelist = os.path.basename(fname).split('.')
         rootname = namelist[0]
         mtzname = str(rootname + "_" + form + ".mtz")
@@ -235,7 +242,7 @@ class ASCII(Abstract):
         time.sleep(2)
         if os.path.isfile('F2MTZ.INP'):
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], f2mtz_cmd, 'xdsconv.log')
+                run_command("sxdm", self.getOutputDirectory(), inData['user'], f2mtz_cmd, 'xdsconv.log')
             except KeyError:
                 sub.call(f2mtz_cmd, shell=True)
             time.sleep(2)
@@ -243,3 +250,9 @@ class ASCII(Abstract):
         else:
             logger.info('f2mtz_error:{}'.format('xdsconv did not run\n'))
         return
+
+
+indict = {"xds_ascii": "/nfs/ssx/shbasu/MEmmery/processed/adm_serial-xtal/adm_45/ISa_Select.HKL"}
+xscale = ASCII(indict)
+xscale.get_data(indict)
+print(xscale.results)

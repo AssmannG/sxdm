@@ -6,18 +6,20 @@ __refactordate__ = "10/05/2021"
 
 import os, sys,glob
 import logging
-from abstract import Abstract
-from xscale_output import OutputParser
+from src.abstract import Abstract
+from src.xscale_output import OutputParser
 
 logger = logging.getLogger('sxdm')
 
 class ScaleUtils(Abstract):
 
     def find_corrects(self, inData):
+        self.results['listofCORRECTfiles'] = []
         try:
             for fname in inData['listofHKLfiles']:
                 folder = os.path.dirname(fname)
                 path = os.path.join(folder, 'CORRECT.LP')
+
                 if os.path.isfile(path):
                     self.results['listofCORRECTfiles'].append(path)
 
@@ -66,7 +68,7 @@ class ScaleUtils(Abstract):
             for fname, cor_name in zip(inData['listofHKLfiles'], self.results['listofCORRECTfiles']):
                 indict = {'CORRECT_file': cor_name}
                 correct_parse = OutputParser(indict)
-                correct_parse.parse_xds_stats(cor_name)
+                correct_parse.parse_xds_stats(indict)
                 mean_rmeas = correct_parse.mean_rmeas_calc(correct_parse.results['xds_stat'])
                 rmeas_dict[fname] = mean_rmeas
 
@@ -80,11 +82,12 @@ class ScaleUtils(Abstract):
             self.check_bfactor(inData)
             try:
                 reference = self.results['bfac_sorted_hkls'][0][0]
+
             except (IndexError, ValueError):
                 err = 'bfactor selection may not work'
                 logger.error(err)
                 self.setFailure()
-            return
+
 
         elif inData['fom'] == 'rmeas':
             self.rank_rmeas(inData)
@@ -97,6 +100,7 @@ class ScaleUtils(Abstract):
         else:
             pass
         self.results['reference'] = reference
+        return
 
     def Bfact_sorter(self, inData):
         bfac_sorted_hkls = []

@@ -1,6 +1,5 @@
-import os, sys
 
-INP = {}
+INP = dict()
 
 INP['PXI'] = """
 !setting for x06sa EIGER 16M data

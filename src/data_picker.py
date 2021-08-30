@@ -7,8 +7,8 @@ __refactordate__ = "26/05/2021"
 import os, sys
 import logging
 import numpy as np
-from cellprobe import Cell
-from abstract import Abstract
+from src.cellprobe import Cell
+from src.abstract import Abstract
 
 logger = logging.getLogger('sxdm')
 

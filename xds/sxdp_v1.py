@@ -10,10 +10,10 @@ import subprocess as sub
 import h5py
 import numpy as np
 import multiprocessing as mp
-import argparse, logging
+import argparse
 import xds_input
 
-import Merge_utls as merge
+import Merging as merge
 from cellprobe import Cell
 from xscale_output import *
 import matplotlib.pyplot as plt

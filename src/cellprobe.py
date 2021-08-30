@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import scipy.cluster.hierarchy as sch
 import logging
-from abstract import Abstract
+from src.abstract import Abstract
 
 logger = logging.getLogger('sxdm')
 
@@ -307,8 +307,9 @@ def finder():
     import glob
     paths = glob.glob(os.path.join(root, 'minisets_*/xtal_*/XDS_ASCII.HKL'))
     return paths
-
+'''
 import glob
 paths = glob.glob('/Users/shibom/work/CY_IMISX/all_pepT_sad_v2/xtal_*.HKL')
 cell = Cell(sorted(paths[0:100]))
 cell.clustering()
+'''

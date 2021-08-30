@@ -18,6 +18,7 @@ class Abstract(object):
           self._ioDict['success'] = True
           self._ioDict['WorkingDirectory'] = None
           self._logFileName = None
+          self.results = dict()
           return
 
     def get_inData(self):
@@ -34,7 +35,7 @@ class Abstract(object):
     def set_outData(self, results):
         self._ioDict['outData'] = json.dumps(results, default=str)
 
-    results = property(get_outData, set_outData)
+    outData = property(get_outData, set_outData)
 
     def writeInputData(self, inData):
         # Write input data

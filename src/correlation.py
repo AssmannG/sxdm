@@ -7,11 +7,11 @@ __refactordate__ = "25/05/2021"
 import sys, os
 import numpy as np
 import logging
-from ascii import ASCII
-from cellprobe import Cell
+from src.ascii import ASCII
+from src.cellprobe import Cell
 import multiprocessing as mp
 import scipy.cluster.hierarchy as sch
-from abstract import Abstract
+from src.abstract import Abstract
 
 logger = logging.getLogger('sxdm')
 
@@ -84,8 +84,8 @@ class CCestimator(Abstract):
         xscale = ASCII(inData)
         xscale.get_data(inData)
         self.results['setlist'] = []
-        for k in xscale.results['input_files'].iterkeys():
-            self.results['setlist'].append(xscale.results['input_files'][k][0])
+        for k in xscale.results['input_files'].keys():
+            self.results['setlist'].append(xscale.results['input_files'][k])
 
         self.results['cc_dataset_list'] = {}
         self.results['cc_cluster_list'] = []
@@ -223,7 +223,8 @@ class CCestimator(Abstract):
             self.results['cc_dendo'] = sch.dendrogram(Y, labels=self.results['data_points'], no_plot=True)
             #sch.dendrogram(Y, truncate_mode='level', show_contracted=True, leaf_rotation=90)
         except Exception as e:
-            logger.info('From_cc_cluster_func:{}')
+            logger.info('From_cc_cluster_func:{}'.format(e))
+        return
 
     def cc_select(self, fom='ccd'):
         if fom == 'ccd':

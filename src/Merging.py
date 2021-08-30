@@ -8,22 +8,21 @@ __refactordate__ = "06/05/2021"
 
 
 import errno
-import pathlib
 import shutil
 import time
 import subprocess as sub
 
-from cellprobe import Cell
-import index_check
-from space_group_lib import *
-from xscale_output import OutputParser
-from run_command import *
-from scale_utl import ScaleUtils
-from ascii import ASCII
-from dendro2highcharts import dendro2highcharts
-import correlation as corc
+from src.cellprobe import Cell
+import src.index_check as index_check
+from src.space_group_lib import *
+from src.xscale_output import OutputParser
+from src.run_command import *
+from src.scale_utl import ScaleUtils
+from src.ascii import ASCII
+from src.dendro2highcharts import dendro2highcharts
+import src.correlation as corc
 
-from abstract import Abstract
+from src.abstract import Abstract
 
 
 logger = logging.getLogger('sxdm')
@@ -124,15 +123,18 @@ class Merging(Abstract):
             }
         }
 
-    def outdir_make(self, inData):
+    def outdir_make(self):
         try:
-            outname = 'adm_' + inData['experiment']
+            outname = 'adm_' + self.jshandle['experiment']
             self.setOutputDirectory()
-            subadm = 'adm_' + str(len(inData['pathlist']))
-            suffix = inData.get('suffix', " ")
-            subadm = subadm + "_" + suffix
+            subadm = 'adm_' + str(len(self.jshandle['pathlist']))
+            suffix = self.jshandle.get('suffix', None)
+            if suffix is not None:
+                subadm = subadm + "_" + suffix
+            else:
+                pass
             subadm = self.getOutputDirectory() / outname / subadm
-            subadm.mkdirs(parents=True, exist_ok=True)
+            subadm.mkdir(parents=True, exist_ok=True)
             os.chdir(subadm)
             self.setOutputDirectory(path=subadm)
         except KeyError as e:
@@ -142,27 +144,28 @@ class Merging(Abstract):
 
     @staticmethod
     def sort_xtal(lists):
+        sortnum = []
         sortlist = []
         if lists:
             for val in lists:
                 num_sep = val.split('_')
                 num = num_sep[1].split('.')
-                sortlist.append(int(num[0]))
+                sortnum.append(int(num[0]))
 
-            sortlist = []
-            for v in sorted(sortlist):
+            for v in sorted(sortnum):
                 element = 'xtal_'+str(v)+'.HKL'
                 sortlist.append(element)
         return sortlist
 
-    def find_HKLs(self, inData):
+    def find_HKLs(self):
         hklpaths = []
         try:
-            self.results['xtals_expected'] = len(inData['pathlist'])
+            self.results['xtals_expected'] = len(self.jshandle['pathlist'])
+
             msg = "# of xtals expected: %d\n" %self.results['xtals_expected']
             logger.info('MSG: {}'.format(msg))
 
-            for path in inData['pathlist']:
+            for path in self.jshandle['pathlist']:
                 filepath = os.path.join(path, "XDS_ASCII.HKL")
                 if os.path.isfile(filepath):
                     hklpaths.append(filepath)
@@ -182,6 +185,8 @@ class Merging(Abstract):
 
 
     def create_file_links(self):
+
+        self.results['filelinks'] = []
         try:
             for ii in range(len(self.results['hklpaths_found'])):
                 try:
@@ -189,7 +194,6 @@ class Merging(Abstract):
 
                     os.symlink(self.results['hklpaths_found'][ii], linkname)
                     self.results['filelinks'].append(linkname)
-
                 except OSError as e:
                     if e.errno == errno.EEXIST:
                         os.remove(linkname)
@@ -197,15 +201,15 @@ class Merging(Abstract):
                         self.results['filelinks'].append(linkname)
 
                     else:
-                        logger.error(e)
-                        self.setFailure()
+                         logger.error(e)
+                         self.setFailure()
         except (KeyError, IndexError) as err:
             logger.error(err)
             self.setFailure()
         return
 
-    def indexing_(self, inData):
-        self.results['reference'] = inData.get('reference', self.results['hklpaths_found'][0])
+    def indexing_(self):
+        self.results['reference'] = self.jshandle.get('reference', self.results['hklpaths_found'][0])
         try:
             for ii in range(1, len(self.results['hklpaths_found'])):
                 if not index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
@@ -222,20 +226,22 @@ class Merging(Abstract):
         return
 
     def create_inp(self, filelist, inData):
-        unit_cell = inData.get("unit_cell", "79 79 79 90 90 90")
-        space_group = inData.get("space_group", "0")
-        friedel = inData.get("friedels_law", "TRUE")
-        reso_cut = inData.get("resolution", "1.0")
+
+        friedel = self.jshandle.get("friedels_law", "TRUE")
+        reso_cut = self.jshandle.get("resolution", "1.0")
         reference = inData.get('reference', self.results['hklpaths_found'][0])
 
         fh = open("XSCALE.INP",'w')
         fh.write("OUTPUT_FILE=XSCALE.HKL\n")
-        fh.write("MAXIMUM_NUMBER_OF_PROCESSORS=%d\n" %inData.get('nproc', 12))
+        fh.write("MAXIMUM_NUMBER_OF_PROCESSORS=%d\n" %self.jshandle.get('nproc', 12))
         fh.write("SAVE_CORRECTION_IMAGES=FALSE\n")
         fh.write("FRIEDEL'S_LAW=%s\n\n" %friedel)
-        fh.write("SPACE_GROUP_NUMBER=%s\n" %space_group)
-        fh.write("UNIT_CELL_CONSTANTS=%s\n" %unit_cell)
         fh.write('REFERENCE_DATA_SET= %s\n' %reference)
+        try:
+            fh.write("SPACE_GROUP_NUMBER=%s\n" %inData['space_group'])
+            fh.write("UNIT_CELL_CONSTANTS=%s\n" %inData['unit_cell'])
+        except KeyError as err:
+            logger.info("didnot add spg/unit_cell")
 
         for f in filelist:
             fh.write("INPUT_FILE=%s\n" %f)
@@ -245,9 +251,11 @@ class Merging(Abstract):
         fh.close()
         return
 
-    def Isa_select(self, inData):
+    def Isa_select(self, config):
         # method to perform ISa based selection of 'good' HKL files for next round of XSCALEing
-        isa_threshold = inData.get('isa_cutoff', 3.0)
+        isa_threshold = self.jshandle.get('isa_cutoff', 3.0)
+        self.results['isa_selected'] = []
+
         if os.path.isfile("XSCALE.LP"):
             fh = open("XSCALE.LP", 'r')
             all_lines = fh.readlines()
@@ -257,13 +265,11 @@ class Merging(Abstract):
                 end = all_lines.index(' (ASSUMING A PROTEIN WITH 50% SOLVENT)\n')
                 # select the table with ISa values from the file..
                 isa_list = all_lines[start+1:end-3]
+            # except (ValueError, IndexError) as err:
+            #     error = "check if XSCALE ran properly or XSCALE.INP screwed up \n"
+            #     logger.error(error)
 
-            except (ValueError, IndexError) as err:
-                error = "check if XSCALE ran properly or XSCALE.INP screwed up \n"
-                logger.error(error)
-                return
 
-            try:
                 for lines in isa_list:
                     line = lines.split()
                     try:
@@ -271,16 +277,18 @@ class Merging(Abstract):
                             self.results['isa_selected'].append(line[4])
                     except IndexError:
                         pass
+
                 self.results['isa_selected'] = Merging.sort_xtal(self.results['isa_selected'])
-                self.create_inp(self.results['isa_selected'], inData)
+                self.create_inp(self.results['isa_selected'], config)
+
                 msg = "%d xtals selected by ISa-cut out of %d xtals\n" %(len(self.results['isa_selected']),
                                                                          len(self.results['hklpaths_found']))
                 self.results['xtals_after_isa'] = len(self.results['isa_selected'])
 
                 logger.info('MSG:{}'.format(msg))
                 try:
-                    # user = inData.get('user', " ")
-                    run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], Merging._command, self.getLogFileName())
+                    # user = self.jshandle.get('user', " ")
+                    run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
                 except KeyError as e:
                     sub.call(Merging._command, shell=True)
 
@@ -293,14 +301,14 @@ class Merging(Abstract):
             self.setFailure()
         return
 
-    def xscale_for_sad(self, inData):
-        self.find_HKLs(inData)
+    def xscale_for_sad(self):
+        self.find_HKLs()
 
-        self.outdir_make(inData)
-
+        self.outdir_make()
+        config = dict()
         if len(self.results['hklpaths_found']) > 0:
             if len(self.results['hklpaths_found']) < 1000:
-                self.indexing_(inData)
+                self.indexing_()
             else:
                 logger.info('Too many hkls, so skipping the indexing check')
                 pass
@@ -317,15 +325,17 @@ class Merging(Abstract):
             self.results['space_group'] = space_group[ref_for_cell_sg.results['spg']][0]
             self.results['unit-cell'] = ref_for_cell_sg.results['unit_cell']
             self.results['friedel'] = ref_for_cell_sg.results['anom']
-            inData.update({'reference', sc.results['reference']})
-            self.create_inp(self.results['hklpaths_found'], inData)
+            config['reference'] = sc.results['reference']
+            self.create_file_links()
+            self.create_inp(self.results['filelinks'], config)
         else:
-            self.create_inp(self.results['hklpaths_found'], inData)
+            # self.create_inp(self.results['hklpaths_found'], config)
+            logger.error("No hkl file found")
 
         msg = "xscale-ing of native SAD data\n"
         logger.info('MSG:{}'.format(msg))
         try:
-            run_command("sxdm", self.getOutputDirectory(), inData['user'], Merging._command, self.getLogFileName())
+            run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
         except KeyError:
             sub.call(Merging._command, shell=True)
 
@@ -343,11 +353,11 @@ class Merging(Abstract):
             self.setFailure()
         return
 
-    def xscale_for_sx(self, inData):
-        self.find_HKLs(inData)
-
+    def xscale_for_sx(self):
+        self.find_HKLs()
+        config = dict()
         try:
-            self.outdir_make(inData)
+            self.outdir_make()
 
         except OSError:
             err = "adm folder either not there or not accessible\n"
@@ -357,19 +367,33 @@ class Merging(Abstract):
 
         try:
             if len(self.results['hklpaths_found']) < 1000:
-                self.indexing_(inData)
+                self.indexing_()
             else:
                 msg = "Too many hkls, so skipping indexing check"
                 logger.info('MSG:{}'.format(msg))
                 pass
 
+            indict = {"listofHKLfiles": self.results['hklpaths_found'],
+                      "fom":'rmeas'}
+            sc = ScaleUtils(indict)
+            sc.ref_choice(indict)
+
+            logging.info('lowest-Rmeas file: %s' %sc.results['reference'])
+            indata_ascii = {"xds_ascii": sc.results['reference']}
+            ref_for_cell_sg = ASCII(indata_ascii)
+            ref_for_cell_sg.get_data(indata_ascii)
+
+            self.results['space_group'] = space_group[ref_for_cell_sg.results['spg']][0]
+            self.results['unit-cell'] = ref_for_cell_sg.results['unit_cell']
+            self.results['friedel'] = ref_for_cell_sg.results['anom']
+            config['reference'] = sc.results['reference']
             self.create_file_links()
-            self.create_inp(self.results['hklpaths_found'], inData)
+            self.create_inp(self.results['filelinks'], config)
 
             msg = "Running 1st round of xscale-ing with Rmeas based ranking\n"
             logger.info('MSG:{}'.format(msg))
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], Merging._command, self.getOutputDirectory())
+                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getOutputDirectory())
             except KeyError:
                 sub.call(Merging._command, shell=True)
             try:
@@ -392,7 +416,7 @@ class Merging(Abstract):
 
             msg = "running xscale after ISa selection\n"
             logger.info(msg)
-            self.Isa_select(inData)
+            self.Isa_select(config)
 
             try:
                 indict = {"LPfile": "XSCALE.LP"}
@@ -413,6 +437,7 @@ class Merging(Abstract):
                 return
             celldict = {"listofHKLfiles": self.results['isa_selected']}
             celler = Cell(celldict)
+            celler.setter(celldict)
             if len(celler.results['hklList']) > 200:
                 celler.cell_analysis(celldict)
                 self.results['cell_array'] = celler.results['cell_ar'].tolist()
@@ -427,35 +452,36 @@ class Merging(Abstract):
             mode_cells = str(celler.results['a_mode']) + "  " + str(celler.results['b_mode']) + '  ' + str(celler.results['c_mode']) + \
             "  " + str(celler.results['al_mode']) + "  " + str(celler.results['be_mode']) + "   " + str(celler.results['ga_mode'])
 
-            self.results['unit-cell'] = mode_cells
+            # self.results['unit-cell'] = mode_cells
             # convert dendro dictionary for easy plottable dictionary in adp tracker
             try:
-                self.results['cell_dendrogram'] = dendro2highcharts(celler.dendo)
+                self.results['cell_dendrogram'] = dendro2highcharts(celler.results['dendo'])
                 # self.scale_results['hclust_matrix'] = celler.hclust_matrix
-                self.results['cell_n_clusters'] = celler.n_clusters_cell
+                self.results['cell_n_clusters'] = celler.results['n_clusters_cell']
             except Exception as e:
                 logger.info('skipping-dendro-cell:{}'.format(e))
 
             try:
-                inData.update({'unit_cells': mode_cells})
-                self.create_inp(celler.results['cell_select'], inData)
+                config['unit_cell'] = mode_cells
+                config['space_group'] = ref_for_cell_sg.results['spg']
+
+                self.create_inp(celler.results['cell_select'], config)
                 msg = "xscaling after cell-analysis and rejecting outliers\n"
+                msg += "%d xtals got selected after cell analysis out of %d xtals" \
+                      %(len(celler.results['cell_select']), len(self.results['hklpaths_found']))
                 logger.info('MSG:{}'.format(msg))
+
                 try:
-                    run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], Merging._command, self.getLogFileName())
+                    run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
                 except (OSError, TypeError, KeyError) as e:
                     sub.call(Merging._command, shell=True)
-
-                msg = "%d xtals got selected after cell analysis out of %d xtals" \
-                      %(len(celler.results['cell_select']), len(self.results['hklpaths']))
-                logger.info('MSG:{}'.format(msg))
 
                 self.results['xtals_after_cell'] = len(celler.results['cell_select'])
 
             except Exception as e:
                 logger.info('Error:{}'.format(e))
                 self.setFailure()
-                return
+
             try:
                 indict = {"LPfile": "XSCALE.LP"}
                 xscale_parse = OutputParser(indict)
@@ -471,7 +497,6 @@ class Merging(Abstract):
                 err = "xscaling after Cell selection may not work\n"
                 logger.info('OSError:{}'.format(err))
 
-                return
             ccDict = {"xds_ascii": 'ISa_Select.HKL'}
             CC = corc.CCestimator(ccDict)
             logger.info('ASCII loaded')
@@ -480,17 +505,18 @@ class Merging(Abstract):
                 self.results['cc_dendrogram'] = dendro2highcharts(CC.results['cc_dendo'])
                 self.results['cc_n_clusters'] = CC.results['n_clusters_cc']
                 self.results['hkl_cc_sorted'] = CC.results['cc_cluster_list']
-                msg = "pair-correlation sorting over Isa_select: %d hkls" %len(self.results['hkl_cc_sorted'])
+                self.results['xtals_after_pCC'] = len(self.results['hkl_cc_sorted'])
+                msg = "pair-correlation sorting over Isa_select: %d hkls" %self.results['xtals_after_pCC']
                 logger.info('MSG:{}'.format(msg))
-                self.create_inp(self.results['hkl_cc_sorted'], inData)
+                self.create_inp(self.results['hkl_cc_sorted'], config)
             except Exception as err:
                 logger.info('cc-dendro-empty:{}'.format(err))
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], Merging._command, self.getLogFileName())
+                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
             except (OSError, TypeError, Exception) as e :
                 sub.call(Merging._command, shell=True)
 
-            self.results['xtals_after_pCC'] = len(self.results['hkl_cc_sorted'])
+
 
             try:
                 indict = {"LPfile": "XSCALE.LP"}
@@ -507,26 +533,25 @@ class Merging(Abstract):
                 err = "xscaling after pair-correlation selection may not work\n"
                 logger.info('OSError:{}'.format(err))
                 self.setFailure()
-                return
+
         except Exception as e:
             logger.info('Error: {}'.format(e))
             self.setFailure()
-            return
+
 
         return
 
-    def isocluster(self, xscalefile, inData):
+    def isocluster(self, xscalefile):
 
         if os.path.isfile(xscalefile):
-            comd = "xscale_isocluster -dim 3 -dmax %s %s" %(inData['resolution'], xscalefile)
+            comd = "xscale_isocluster -dim 3 -dmax %s %s" %(self.jshandle['resolution'], xscalefile)
             msg = "iso-clustering based on Correlation\n"
             logger.info('MSG:{}'.format(msg))
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], comd, 'isocluster.log')
+                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], comd, 'isocluster.log')
             except KeyError:
                 comd1 = "xscale_isocluster %s > isocluster.log" %xscalefile
                 sub.call(comd1, shell=True)
-
 
         else:
             self.setFailure()
@@ -551,7 +576,7 @@ class Merging(Abstract):
             msg = "xscale-ing over 1st cluster only..\n"
             logger.info('MSG:{}'.format(msg))
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], Merging._command, self.getLogFileName())
+                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
             except KeyError:
                 sub.call(Merging._command, shell=True)
             try:
@@ -572,16 +597,16 @@ class Merging(Abstract):
                 return
         return
 
-    def aniso_check(self, inData):
+    def aniso_check(self):
         point_cmd = "pointless -xdsin noSelect.HKL hklout noSelect_point.mtz"
         try:
-            run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], point_cmd, 'pointless.log')
+            run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], point_cmd, 'pointless.log')
         except KeyError:
             point_cmd1 = "pointless -xdsin noSelect.HKL hklout noSelect_point.mtz > pointless.log"
             sub.call(point_cmd1, shell=True)
         time.sleep(2)
 
-        if os.path.isfile(self.getOutputDirectory() / "noSelect_point.mtz"):
+        if os.path.isfile(str(self.getOutputDirectory() / "noSelect_point.mtz")):
 
             fh = open("onlymerge.inp", 'w')
             fh.write("ONLYMERGE\n")
@@ -601,7 +626,7 @@ class Merging(Abstract):
             fh.close()
             aim_cmd = "aimless hklin noSelect_point.mtz hklout noSelect_aim.mtz < onlymerge.inp"
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), inData['user'], aim_cmd, 'aimless.log')
+                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], aim_cmd, 'aimless.log')
             except (OSError, TypeError, Exception) as e:
                 aim_cmd1 = aim_cmd + '| tee aimless.log'
                 sub.call(aim_cmd1, shell=True)
@@ -640,35 +665,34 @@ class Merging(Abstract):
                     hk_plane = line[1].split(':')[1]
                     l_axis = line[2].split(':')[1].strip('\n')
                     aniso_string = "hk-plane = %s, l-axis = %s" %(hk_plane, l_axis)
-                    #aniso_string = 'banana'
                     self.results['anisotropicity'] = aniso_string
 
             else:
                 pass
         return
 
-    @staticmethod
-    def create_mtzs(inData):
+    def create_mtzs(self):
         lst_of_hkls = ['noSelect.HKL', 'ISa_Select.HKL', 'Cell_Select.HKL', 'pCC_Select.HKL']
         indata_ascii = {"mtz_format": "CCP4_I+F",
-                        "resolution": inData['resolution'],
+                        "resolution": float(self.jshandle['resolution']),
                         }
         for hklfile in lst_of_hkls:
             if os.path.isfile(hklfile):
                 indata_ascii['xds_ascii'] = hklfile
                 hkl = ASCII(indata_ascii)
+                hkl.get_data(indata_ascii)
                 hkl.xdsconv(indata_ascii)
             else:
                 logger.info('mtz-create-info:{}'.format('could not create mtz; file may not exist'))
                 pass
         return
 
-    def run_(self, inData):
+    def run_(self):
 
         try:
-            if inData['experiment'] == 'native-sad':
-                self.xscale_for_sad(inData)
-                self.Isa_select(inData)
+            if self.jshandle['experiment'] == 'native-sad':
+                self.xscale_for_sad()
+                self.Isa_select()
                 shutil.copyfile('XSCALE.LP', 'ISa_Select.LP')
                 shutil.copyfile('XSCALE.HKL', 'ISa_Select.HKL')
                 indict = {"LPfile": "ISa_Select.LP"}
@@ -676,20 +700,21 @@ class Merging(Abstract):
                 xscale_parse.parse_xscale_output(indict)
                 self.results['ISa_selection'] = xscale_parse.results
 
-            elif inData['experiment'] == 'serial-xtal':
-                self.xscale_for_sx(inData)
-
-                xscale = ASCII('noSelect.HKL')
+            elif self.jshandle['experiment'] == 'serial-xtal':
+                self.xscale_for_sx()
+                indict = {'xds_ascii': 'noSelect.HKL'}
+                xscale = ASCII(indict)
+                xscale.get_data(indict)
                 xscale.multiplicity_check()
                 self.results['multiplicity'] = xscale.results['multiplicity']
-                # self.isocluster('noSelect.HKL')
-                self.aniso_check(inData)
-                self.create_mtzs(inData)
 
-            elif inData['experiment'] == 'inverse-beam' or inData['experiment'] == 'interleave-and-inverse-first':
+                self.aniso_check()
+                self.create_mtzs()
+
+            elif self.jshandle['experiment'] == 'inverse-beam' or self.jshandle['experiment'] == 'interleave-and-inverse-first':
                 pass
             else:
-                logger.info('Error: experiment type not supported %s' %inData['experiment'])
+                logger.info('Error: experiment type not supported %s' %self.jshandle['experiment'])
                 self.setFailure()
         except Exception as e:
             logger.info('Error:{}'.format(e))
@@ -697,78 +722,5 @@ class Merging(Abstract):
         return
 
 
-def finder(folder, method):
-    root = folder
-    expt = method
-    path_list =[]
-    print(root)
-    if expt == 'serial-xtal':
-        for ii in range(len(root)):
-            dirs = pathlib.Path(root[ii])
-            paths = dirs.glob('*' + '*/XDS_ASCII.HKL')
-            path_list.append(paths)
-    elif expt == 'native-sad':
-        for ii in range(len(root)):
-            dirs = pathlib.Path(root[ii])
-            paths = dirs.glob('set*')
-            path_list.append(paths)
-    return path_list
-
-def get_paths_xscale():
-    xscale_file = sys.argv[1]
-    paths = []
-    if not xscale_file.endswith('LP'):
-        msg = "TypeError: .LP file needed"
-        logger.info(msg)
-    else:
-        fh = open(xscale_file, 'r')
-        _all = fh.readlines()
-        fh.close()
-        for lines in _all:
-            if 'INPUT_FILE' in lines:
-                line = lines.split('=')
-                abs_path = os.path.abspath(line[1].strip('\n'))
-                paths.append(abs_path)
-            else:
-                pass
-    return paths
 
 
-
-
-'''
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG,
-    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-    datefmt='%y-%m-%d %H:%M',
-    filename='merge.log',
-    filemode='a+')
-
-    op = optargs()
-        print(op.root)
-    if op.root is not None and op.expt is not None:
-        hklpath_list = finder(op.root, op.expt)
-    else:
-        logger.error("command line arguments are missing, quit!")
-        sys.exit()
-
-    hklpath = []
-    print hklpath_list
-    for item in hklpath_list:
-        for val in item:
-            hklpath.append(val)
-    op_dict = dict()
-
-    if op.reference is not None:
-        op_dict['reference'] = op.reference
-
-    op_dict['isa_cut'] = op.isa_cut
-    op_dict['res_cut'] = op.res_cut
-    op_dict['friedel'] = op.friedel
-        op_dict['suffix'] = op.suffix
-
-    mm = Merging(inData)
-    mm.run_(inData)
-    with open('Mergeing_results.json', 'w') as ofh:
-        ofh.write(json.dumps(mm.scale_results, indent=4))
-'''
