@@ -4,15 +4,15 @@ import logging
 from src.Merging import Merging
 logger = logging.getLogger('sxdm')
 
-def finder(folder, method):
-    root = folder
-    expt = method
+def finder(root, expt):
+    print(len(root))
     path_list =[]
     if expt == 'serial-xtal':
         for ii in range(len(root)):
             dirs = pathlib.Path(root[ii])
             posix = list(dirs.glob('*/*'))
-            path_list = list(map(lambda x: str(x), posix))
+            path_list += list(map(lambda x: str(x), posix))
+
     elif expt == 'native-sad':
         for ii in range(len(root)):
             dirs = pathlib.Path(root[ii])
@@ -57,10 +57,10 @@ if __name__ == '__main__':
     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
     datefmt='%y-%m-%d %H:%M',
     filename='merge.log',
-    filemode='a+')
+    filemode='a')
 
     op = optargs()
-    print(op.root)
+
     if op.root is not None and op.expt is not None:
         hklpath_list = finder(op.root, op.expt)
 
@@ -75,6 +75,7 @@ if __name__ == '__main__':
     inData['resolution'] = op.res_cut
     inData['friedels_law'] = op.friedel
 
+    
     mm = Merging(inData)
 
     mm.run_()

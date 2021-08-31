@@ -1,19 +1,8 @@
 #!/bin/bash
 
-HKLPATHS="${1}"
-Method="${2}"
+HKLPATHS="/nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD024A \
+ /nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD029A" 
 
-if [[ -n "${BEAMLINE_XNAME}" ]]; then
-  source /opt/gfa/python 2.7
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'/exchange/mx/daplus/imisx_processing/cctbx/build/lib:/exchange/mx/daplus/imisx_processing/cctbx/base/lib:/exchange/mx/daplus/conda_envs/adp_copy/lib:/exchange/mx/daplus/conda_envs/adp_copy/lib/python2.7/site-packages'
-  export LIBTBX_BUILD='/exchange/mx/daplus/imisx_processing/cctbx/build'
-  export PYTHONPATH='/exchange/mx/daplus/imisx_processing/cctbx/build/lib:/exchange/mx/daplus/imisx_processing/cctbx/modules/cctbx_project:/exchange/mx/daplus/imisx_processing/cctbx/modules/cctbx_project/boost_adaptbx:/exchange/mx/daplus/conda_envs/adp_copy/lib'
-  export PYTHONPATH=$PYTHONPATH:'/exchange/mx/daplus/git/sxdm/src'
-  python /exchange/mx/daplus/git/sxdm/src/Merge_utls.py $HKLPATHS $Method
-
-else
-    echo "using ra-cluster or local computer\n"
-    echo "cctbx and sxdm have to be added to LD_LIBRARY_PATH and PYTHONPATH"
-    exit
-    python $script/Merge_utls.py $HKLPATHS $Method
-fi
+Method="serial-xtal"
+ref=" "
+python ~/codes/sxdm/execute/run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"

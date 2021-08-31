@@ -251,8 +251,8 @@ class ASCII(Abstract):
             logger.info('f2mtz_error:{}'.format('xdsconv did not run\n'))
         return
 
-
-indict = {"xds_ascii": "/nfs/ssx/shbasu/MEmmery/processed/adm_serial-xtal/adm_45/ISa_Select.HKL"}
-xscale = ASCII(indict)
-xscale.get_data(indict)
-print(xscale.results)
+if __name__ == '__main__':
+    indict = {"xds_ascii": "/nfs/ssx/shbasu/MEmmery/processed/adm_serial-xtal/adm_45/ISa_Select.HKL"}
+    xscale = ASCII(indict)
+    xscale.get_data(indict)
+    print(xscale.results)

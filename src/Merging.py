@@ -174,7 +174,7 @@ class Merging(Abstract):
                     hklpaths.append(path)
 
                 else:
-                    err = "Incorrect format of files or couldn't find XDS_ASCII.HKLs"
+                    err = "couldn't find XDS_ASCII.HKLs %s" % filepath
                     logger.error('Error:{}'.format(err))
         except KeyError as e:
             logger.error(e)
