@@ -1,8 +1,21 @@
 #!/bin/bash
 
-HKLPATHS="/nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD024A \
- /nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD029A" 
+#HKLPATHS="/nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD024A \
+# /nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD029A" 
+
+HKLPATHS="/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_modi/mGlu5_H9259_1"
 
 Method="serial-xtal"
 ref=" "
-python ~/codes/sxdm/execute/run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
+
+#-----------------------------ENVIRONMENTS---------------------
+#export PYTHONPATH=$PYTHONPATH:'/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm/src'
+export SXDM="/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm"
+
+
+
+
+
+
+python run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
+

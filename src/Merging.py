@@ -230,13 +230,15 @@ class Merging(Abstract):
         friedel = self.jshandle.get("friedels_law", "TRUE")
         reso_cut = self.jshandle.get("resolution", "1.0")
         reference = inData.get('reference', self.results['hklpaths_found'][0])
-
+        #print(reference)
+        os.symlink(reference,'reference.HKL')
         fh = open("XSCALE.INP",'w')
         fh.write("OUTPUT_FILE=XSCALE.HKL\n")
         fh.write("MAXIMUM_NUMBER_OF_PROCESSORS=%d\n" %self.jshandle.get('nproc', 12))
         fh.write("SAVE_CORRECTION_IMAGES=FALSE\n")
         fh.write("FRIEDEL'S_LAW=%s\n\n" %friedel)
-        fh.write('REFERENCE_DATA_SET= %s\n' %reference)
+        #fh.write('REFERENCE_DATA_SET= %s\n' %reference)
+        fh.write("REFERENCE_DATA_SET= reference.HKL\n")
         try:
             fh.write("SPACE_GROUP_NUMBER=%s\n" %inData['space_group'])
             fh.write("UNIT_CELL_CONSTANTS=%s\n" %inData['unit_cell'])
@@ -538,8 +540,10 @@ class Merging(Abstract):
             logger.info('Error: {}'.format(e))
             self.setFailure()
 
-
         return
+
+
+    #def run_xdscc12(self,xscalefile) 
 
     def isocluster(self, xscalefile):
 

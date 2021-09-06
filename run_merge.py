@@ -1,7 +1,7 @@
 import os, sys
 import pathlib
 import logging
-from .src.Merging import Merging
+from src.Merging import Merging
 logger = logging.getLogger('sxdm')
 
 def finder(root, expt):
