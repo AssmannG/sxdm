@@ -3,9 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="5f69493d-0ebd-46ea-81cd-a54b6a239073" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Merging.py" afterPath="$PROJECT_DIR$/src/Merging.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ascii.py" afterPath="$PROJECT_DIR$/src/ascii.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/cellprobe.py" afterPath="$PROJECT_DIR$/src/cellprobe.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/correlation.py" afterPath="$PROJECT_DIR$/src/correlation.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/index_check.py" afterPath="$PROJECT_DIR$/src/index_check.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/execute/run_merge.py" afterPath="$PROJECT_DIR$/execute/run_merge.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/sxdm.merge" afterPath="$PROJECT_DIR$/bin/sxdm.merge" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="sxdm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -52,7 +54,7 @@
         <entry file="file://$PROJECT_DIR$/src/correlation.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="227" column="0" selection-start-line="227" selection-start-column="0" selection-end-line="227" selection-end-column="0" />
+              <caret line="201" column="40" selection-start-line="201" selection-start-column="40" selection-end-line="201" selection-end-column="40" />
               <folding>
                 <element signature="e#105#119#0" expanded="true" />
               </folding>
@@ -72,11 +74,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="run_merge.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index_check.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/index_check.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="97" column="8" selection-start-line="97" selection-start-column="8" selection-end-line="97" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="run_merge.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/execute/run_merge.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.0661764">
-              <caret line="77" column="4" selection-start-line="77" selection-start-column="4" selection-end-line="77" selection-end-column="4" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -84,11 +96,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Merging.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Merging.py">
+      <file leaf-file-name="abstract.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/abstract.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="184" column="0" selection-start-line="184" selection-start-column="0" selection-end-line="184" selection-end-column="0" />
+              <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
+              <folding>
+                <element signature="e#72#81#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Merging.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Merging.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.16">
+              <caret line="221" column="25" selection-start-line="221" selection-start-column="25" selection-end-line="221" selection-end-column="25" />
               <folding>
                 <element signature="e#131#143#0" expanded="true" />
               </folding>
@@ -100,7 +124,7 @@
         <entry file="file://$PROJECT_DIR$/src/cellprobe.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="166" column="58" selection-start-line="166" selection-start-column="58" selection-end-line="166" selection-end-column="58" />
+              <caret line="149" column="34" selection-start-line="149" selection-start-column="34" selection-end-line="149" selection-end-column="34" />
               <folding>
                 <element signature="e#106#120#0" expanded="true" />
               </folding>
@@ -121,15 +145,15 @@
         <option value="$PROJECT_DIR$/src/Merge_utls.py" />
         <option value="$PROJECT_DIR$/xds/sxdp_v1.py" />
         <option value="$PROJECT_DIR$/xds/xds_input.py" />
-        <option value="$PROJECT_DIR$/src/index_check.py" />
         <option value="$PROJECT_DIR$/src/data_picker.py" />
-        <option value="$PROJECT_DIR$/src/cellprobe.py" />
         <option value="$PROJECT_DIR$/src/abstract.py" />
         <option value="$PROJECT_DIR$/src/xscale_output.py" />
         <option value="$PROJECT_DIR$/src/scale_utl.py" />
-        <option value="$PROJECT_DIR$/src/correlation.py" />
-        <option value="$PROJECT_DIR$/src/Merging.py" />
         <option value="$PROJECT_DIR$/src/ascii.py" />
+        <option value="$PROJECT_DIR$/src/correlation.py" />
+        <option value="$PROJECT_DIR$/src/cellprobe.py" />
+        <option value="$PROJECT_DIR$/src/Merging.py" />
+        <option value="$PROJECT_DIR$/src/index_check.py" />
         <option value="$PROJECT_DIR$/execute/run_merge.py" />
       </list>
     </option>
@@ -138,10 +162,10 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="127" />
-    <option name="y" value="2" />
-    <option name="width" value="1560" />
-    <option name="height" value="933" />
+    <option name="x" value="234" />
+    <option name="y" value="4" />
+    <option name="width" value="1540" />
+    <option name="height" value="917" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -182,7 +206,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -232,10 +255,11 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="FullScreen" value="false" />
@@ -386,8 +410,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="127" y="2" width="1560" height="933" extended-state="0" />
-    <editor active="true" />
+    <frame x="234" y="4" width="1540" height="917" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -425,14 +449,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/abstract.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/index_check.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -461,7 +477,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
-          <folding />
+          <folding>
+            <element signature="e#72#81#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -532,7 +550,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
-          <folding />
+          <folding>
+            <element signature="e#72#81#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -596,7 +616,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
-          <folding />
+          <folding>
+            <element signature="e#72#81#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -653,7 +675,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
-          <folding />
+          <folding>
+            <element signature="e#72#81#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -692,7 +716,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
-          <folding />
+          <folding>
+            <element signature="e#72#81#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -707,7 +733,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
-          <folding />
+          <folding>
+            <element signature="e#72#81#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -722,13 +750,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-2.1112454">
           <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/index_check.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="29" selection-start-line="9" selection-start-column="29" selection-end-line="9" selection-end-column="29" />
         </state>
       </provider>
     </entry>
@@ -753,14 +774,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/abstract.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/space_group_lib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -776,10 +789,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/scale_utl.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="73" column="0" selection-start-line="73" selection-start-column="0" selection-end-line="73" selection-end-column="0" />
+          <folding>
+            <element signature="e#105#124#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/correlation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="227" column="0" selection-start-line="227" selection-start-column="0" selection-end-line="227" selection-end-column="0" />
+          <caret line="201" column="40" selection-start-line="201" selection-start-column="40" selection-end-line="201" selection-end-column="40" />
           <folding>
             <element signature="e#105#119#0" expanded="true" />
           </folding>
@@ -789,19 +812,19 @@
     <entry file="file://$PROJECT_DIR$/src/cellprobe.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="166" column="58" selection-start-line="166" selection-start-column="58" selection-end-line="166" selection-end-column="58" />
+          <caret line="149" column="34" selection-start-line="149" selection-start-column="34" selection-end-line="149" selection-end-column="34" />
           <folding>
             <element signature="e#106#120#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scale_utl.py">
+    <entry file="file://$PROJECT_DIR$/src/abstract.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="73" column="0" selection-start-line="73" selection-start-column="0" selection-end-line="73" selection-end-column="0" />
+          <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
           <folding>
-            <element signature="e#105#124#0" expanded="true" />
+            <element signature="e#72#81#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -816,22 +839,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Merging.py">
+    <entry file="file://$PROJECT_DIR$/src/index_check.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="184" column="0" selection-start-line="184" selection-start-column="0" selection-end-line="184" selection-end-column="0" />
-          <folding>
-            <element signature="e#131#143#0" expanded="true" />
-          </folding>
+          <caret line="97" column="8" selection-start-line="97" selection-start-column="8" selection-end-line="97" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../edna2/edna2/lib/autocryst/src/run_crystfel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.875">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/execute/run_merge.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0661764">
-          <caret line="77" column="4" selection-start-line="77" selection-start-column="4" selection-end-line="77" selection-end-column="4" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Merging.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.16">
+          <caret line="221" column="25" selection-start-line="221" selection-start-column="25" selection-end-line="221" selection-end-column="25" />
+          <folding>
+            <element signature="e#131#143#0" expanded="true" />
           </folding>
         </state>
       </provider>

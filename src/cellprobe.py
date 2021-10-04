@@ -147,7 +147,7 @@ class Cell(Abstract):
         #hierarchical clustering using resultant vectors from unit cells
         Y = sch.linkage(self.results['cell_vector'], method='ward')
         self.results['hclust_matrix'] = Y
-        assign = sch.fcluster(Y, 2, 'distance')
+        assign = sch.fcluster(Y, 3, 'distance')
         MSG = "# clusters: %d" %assign.max()
         self.results['n_clusters_cell'] = int(assign.max())
         logger.info('MSG: {}'.format(MSG))

@@ -199,7 +199,7 @@ class CCestimator(Abstract):
             clean_array = np.nan_to_num(self.results['pcc_arr_symm'])
             Y = sch.linkage(clean_array, metric='correlation', method='average')
         try:
-            assign = sch.fcluster(Y, 0.8, 'distance')
+            assign = sch.fcluster(Y, 0.7, 'distance')
             MSG = "# clusters: %d" %assign.max()
             self.results['n_clusters_cc'] = int(assign.max())
             logger.info('MSG: {}'.format(MSG))

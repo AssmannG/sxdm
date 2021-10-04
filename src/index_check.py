@@ -89,10 +89,12 @@ def is_correct(xdsfile, reference, dirname=None, user=None):
 		return False
 
 def similar_symmetry(hkl1, hklref):
-	dict = {'xds_ascii': hklref}
-	refdata = ASCII(dict)
-	dict['xds_ascii'] = hkl1
-	tstdata = ASCII(dict)
+	xdsdict = {'xds_ascii': hklref}
+	refdata = ASCII(xdsdict)
+	refdata.get_data(xdsdict)
+	xdsdict['xds_ascii'] = hkl1
+	tstdata = ASCII(xdsdict)
+	tstdata.get_data(xdsdict)
 	try:
 		return refdata.results['symm'].is_similar_symmetry(tstdata.results['symm'], relative_length_tolerance=0.05, absolute_angle_tolerance=1.5)
 	except Exception:

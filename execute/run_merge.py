@@ -5,7 +5,7 @@ from src.Merging import Merging
 logger = logging.getLogger('sxdm')
 
 def finder(root, expt):
-    print(len(root))
+
     path_list =[]
     if expt == 'serial-xtal':
         for ii in range(len(root)):
@@ -48,6 +48,7 @@ def optargs():
     parser.add_argument("--reference", type=str)
     parser.add_argument("--res_cut", type=str, default='2.0')
     parser.add_argument("--friedel", type=str, default="FALSE")
+    parser.add_argument("--suffix", type=str)
     args = parser.parse_args()
     return args
 
@@ -69,14 +70,17 @@ if __name__ == '__main__':
         sys.exit()
 
     inData=dict()
-    inData['pathlist'] = hklpath_list
+    inData['dirlist'] = op.root
     inData['experiment'] = op.expt
     inData['reference'] = op.reference
     inData['resolution'] = op.res_cut
     inData['friedels_law'] = op.friedel
+    inData['suffix'] = op.suffix
 
-    
     mm = Merging(inData)
+
+    # mm.setOutputDirectory()
+    # mm.writeInputData(inData)
 
     mm.run_()
     if mm.is_success():
