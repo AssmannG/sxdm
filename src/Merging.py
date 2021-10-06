@@ -212,28 +212,18 @@ class Merging(Abstract):
     def indexing_(self):
         #self.results['reference'] = self.jshandle.get('reference', self.results['hklpaths_found'][0]) # not working GA check
         self.results['reference'] = self.results['hklpaths_found'][0]
-        print(len(self.results['hklpaths_found']), "length")
         try:
             for ii in range(1, len(self.results['hklpaths_found'])):
-                print(ii, "--------------------------------------")
-                #print(index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]))
-                #print("nach indexcheck 1")
-                print(self.results['reference'])
-                print(self.results['hklpaths_found'][ii])
-                '''if not index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
+                if not index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
                      self.results['hklpaths_found'].pop(ii)
-                     print("removed")
                      logger.info("wrong indexing\n")
                 else:
-                    pass'''
-
+                    pass
         except (IndexError, ValueError) as err:
-            print("here exeption")
             pass
 
         logger.info('MSG: # of cleaned xtals %s' %len(self.results['hklpaths_found']))
         self.results['xtals_after_idx_check'] = len(self.results['hklpaths_found'])
-        print("end of indexing check")
         return
 
     def create_inp(self, filelist, inData):
