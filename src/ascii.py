@@ -17,7 +17,6 @@ try:
     from cctbx import miller
 except (ImportError, RuntimeError) as err:
     logger.error(err)
-
 class ASCII(Abstract):
 
     @property
@@ -159,7 +158,6 @@ class ASCII(Abstract):
             #cctbx crystal symmetry into flex array type
             a, b, c, al, be, ga = map(lambda x:float(x), cell)
             self.results['symm'] = crystal.symmetry(unit_cell=(a, b, c, al, be, ga), space_group=int(self.results['spg']))
-
             self.results['wave'] = self.results['header']['!X-RAY_WAVELENGTH']
         except (KeyError, IndexError) as e:
             # err = "ASCII-class: could be XSCALE file or check file for keyErrors\n"

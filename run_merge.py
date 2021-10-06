@@ -5,7 +5,7 @@ from src.Merging import Merging
 logger = logging.getLogger('sxdm')
 
 def finder(root, expt):
-    print(len(root))
+    #print(len(root))
     path_list =[]
     if expt == 'serial-xtal':
         for ii in range(len(root)):

@@ -3,7 +3,47 @@
 #HKLPATHS="/nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD024A \
 # /nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD029A" 
 
-HKLPATHS="/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_modi/mGlu5_H9259_1"
+#HKLPATHS="/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1-b \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-4 "
+
+
+HKLPATHS="/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-f \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E9259-1 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_D3199 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F1199-1 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-2 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-e \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E3199 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F1199-2 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-D \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_C3189 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-3 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G3199-2 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8189 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G3199-1 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-1 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-2 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-2-B \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_H9259 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-B \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_C6189 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G9259 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-4 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-3 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G4199-1 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_H11259-2 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F10259-1 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G10259-1 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-5 \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-1-B \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1-b \
+/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-4 \ "
+
+
+
+
 
 Method="serial-xtal"
 ref=" "

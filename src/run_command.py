@@ -8,6 +8,8 @@ from subprocess import Popen, PIPE, STDOUT
 import shlex
 import logging
 
+
+
 def demote(user_uid, user_gid):
 	def result():
 		os.setgid(user_gid)
@@ -24,7 +26,6 @@ def run_command(logger_name, directory_name, user, command, logname):
 		logger.info('pw_record:{}'.format(pw_record))
 	except (OSError, TypeError, Exception) as e:
 		logger.info('switch to local mode'.format(e))
-
 	user_name      = pw_record.pw_name
 	user_home_dir  = pw_record.pw_dir
 	user_uid       = pw_record.pw_uid

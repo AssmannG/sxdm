@@ -180,6 +180,7 @@ class Merging(Abstract):
             logger.error(e)
             self.setFailure()
         self.results['xtals_found'] = len(hklpaths)
+
         self.results['hklpaths_found'] = hklpaths
         return
 
@@ -209,20 +210,30 @@ class Merging(Abstract):
         return
 
     def indexing_(self):
-        self.results['reference'] = self.jshandle.get('reference', self.results['hklpaths_found'][0])
+        #self.results['reference'] = self.jshandle.get('reference', self.results['hklpaths_found'][0]) # not working GA check
+        self.results['reference'] = self.results['hklpaths_found'][0]
+        print(len(self.results['hklpaths_found']), "length")
         try:
             for ii in range(1, len(self.results['hklpaths_found'])):
-                if not index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
-                    self.results['hklpaths_found'].pop(ii)
-                    logger.info("wrong indexing\n")
+                print(ii, "--------------------------------------")
+                #print(index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]))
+                #print("nach indexcheck 1")
+                print(self.results['reference'])
+                print(self.results['hklpaths_found'][ii])
+                '''if not index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
+                     self.results['hklpaths_found'].pop(ii)
+                     print("removed")
+                     logger.info("wrong indexing\n")
                 else:
-                    pass
+                    pass'''
 
         except (IndexError, ValueError) as err:
+            print("here exeption")
             pass
 
         logger.info('MSG: # of cleaned xtals %s' %len(self.results['hklpaths_found']))
         self.results['xtals_after_idx_check'] = len(self.results['hklpaths_found'])
+        print("end of indexing check")
         return
 
     def create_inp(self, filelist, inData):
@@ -231,14 +242,20 @@ class Merging(Abstract):
         reso_cut = self.jshandle.get("resolution", "1.0")
         reference = inData.get('reference', self.results['hklpaths_found'][0])
         #print(reference)
-        os.symlink(reference,'reference.HKL')
+        try:
+            os.symlink(reference,'reference.HKL')
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                os.remove('reference.HKL')
+                os.symlink(reference,'reference.HKL')
+
         fh = open("XSCALE.INP",'w')
         fh.write("OUTPUT_FILE=XSCALE.HKL\n")
         fh.write("MAXIMUM_NUMBER_OF_PROCESSORS=%d\n" %self.jshandle.get('nproc', 12))
         fh.write("SAVE_CORRECTION_IMAGES=FALSE\n")
         fh.write("FRIEDEL'S_LAW=%s\n\n" %friedel)
         #fh.write('REFERENCE_DATA_SET= %s\n' %reference)
-        fh.write("REFERENCE_DATA_SET= reference.HKL\n")
+        fh.write("REFERENCE_DATA_SET= reference.HKL\n")    #GA changed
         try:
             fh.write("SPACE_GROUP_NUMBER=%s\n" %inData['space_group'])
             fh.write("UNIT_CELL_CONSTANTS=%s\n" %inData['unit_cell'])
@@ -249,7 +266,6 @@ class Merging(Abstract):
             fh.write("INPUT_FILE=%s\n" %f)
             fh.write("SNRC=0.0\n")
             fh.write("INCLUDE_RESOLUTION_RANGE= 50 %f\n" %float(reso_cut))
-
         fh.close()
         return
 
@@ -258,8 +274,9 @@ class Merging(Abstract):
         isa_threshold = self.jshandle.get('isa_cutoff', 3.0)
         self.results['isa_selected'] = []
 
-        if os.path.isfile("XSCALE.LP"):
-            fh = open("XSCALE.LP", 'r')
+        #if os.path.isfile("XSCALE.LP"):
+        if os.path.isfile("noSelect.LP"):
+            fh = open("noSelect.LP", 'r')
             all_lines = fh.readlines()
             fh.close()
             try:
@@ -289,7 +306,6 @@ class Merging(Abstract):
 
                 logger.info('MSG:{}'.format(msg))
                 try:
-                    # user = self.jshandle.get('user', " ")
                     run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
                 except KeyError as e:
                     sub.call(Merging._command, shell=True)
@@ -379,7 +395,6 @@ class Merging(Abstract):
                       "fom":'rmeas'}
             sc = ScaleUtils(indict)
             sc.ref_choice(indict)
-
             logging.info('lowest-Rmeas file: %s' %sc.results['reference'])
             indata_ascii = {"xds_ascii": sc.results['reference']}
             ref_for_cell_sg = ASCII(indata_ascii)
@@ -391,7 +406,6 @@ class Merging(Abstract):
             config['reference'] = sc.results['reference']
             self.create_file_links()
             self.create_inp(self.results['filelinks'], config)
-
             msg = "Running 1st round of xscale-ing with Rmeas based ranking\n"
             logger.info('MSG:{}'.format(msg))
             try:
@@ -415,16 +429,17 @@ class Merging(Abstract):
                 self.setFailure()
                 return
 
+            #including run_xdscc12 into merging
+            self.run_xdscc12('noSelect.HKL')
 
             msg = "running xscale after ISa selection\n"
             logger.info(msg)
             self.Isa_select(config)
 
-            try:
+            '''try:
                 indict = {"LPfile": "XSCALE.LP"}
                 xscale_parse = OutputParser(indict)
                 xscale_parse.parse_xscale_output(indict)
-
                 logger.info('stat_dict:{}'.format(xscale_parse.results))
                 self.results['ISa_selection'] = xscale_parse.results
                 shutil.copyfile("XSCALE.INP", "ISa_Select.INP")
@@ -535,7 +550,7 @@ class Merging(Abstract):
                 err = "xscaling after pair-correlation selection may not work\n"
                 logger.info('OSError:{}'.format(err))
                 self.setFailure()
-
+'''
         except Exception as e:
             logger.info('Error: {}'.format(e))
             self.setFailure()
@@ -543,7 +558,70 @@ class Merging(Abstract):
         return
 
 
-    #def run_xdscc12(self,xscalefile) 
+    def run_xdscc12(self,xscalefile):
+        '''
+        runs xdscc12
+        :param xscalefile: input HKL file with umerged intensities
+        :return: not defined yet
+        REMARK: running from noSelect.HKL, saving of noSELECT old ?
+        '''
+
+        delta_cc12 = float(-1000)
+        xdscc12_cmd = "xdscc12 %s" %(xscalefile)
+
+        # loop while deltacc12 <0
+        while delta_cc12 <0:
+            #run xdscc12 with xsalefile
+            try:
+                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], xdscc12_cmd, 'xdscc12.log')
+            except KeyError:
+                xdscc12_cmd1 = "xdscc12 %s >xdscc12.log" %(xscalefile)
+                sub.run(xdscc12_cmd1, shell=True)
+
+            #print(delta_cc12)
+            # calculate how many data sets should be removed (10% of the total range)
+            no_of_datasets = len(self.results['hklpaths_found'])
+            no_of_datasets_remove= int(no_of_datasets * 0.1)
+            print(no_of_datasets_remove, 'from ', no_of_datasets, 'are removed')
+            if(no_of_datasets_remove <1):
+                no_of_datasets_remove = 1
+            #remove data sets %
+            try:
+                fh = open("XSCALE.INP.rename_me", "r")
+                _all = fh.readlines()
+                fh.close()
+                fh = open("XSCALE.INP.rename_me", "w")
+                for i in range(0,len(_all)-(no_of_datasets_remove*2)):
+                        if(_all[i].strip() == "OUTPUT_FILE= noSelect.HKL"):
+                            fh.write("OUTPUT_FILE= XDSCC12.HKL\n")
+                        else:
+                            fh.write(_all[i])
+                fh.close()
+                # reset loop parameter
+                delta_cc12=(_all[i+1]).split()
+                delta_cc12 = float(delta_cc12[5])
+                print("worst rejected DeltaCC1/2 is", delta_cc12)
+            except (OSError, IOError):
+                err = "XSCALE.INP.rename_me file doesn't exist"
+                logger.info('OSError:{}'.format(err))
+                self.setFailure()
+                return
+            #overwrite XSCALE.INP.renameMe to XSCALE.INP
+            mv_cmd = "mv XSCALE.INP.rename_me XSCALE.INP"
+            try:
+                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], mv_cmd, self.getLogFileName())
+            except:
+                sub.run(mv_cmd, shell=True)
+
+            # run xscale, name of output file: XDSCC12.HKL
+            try:
+                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
+            except (OSError, TypeError, KeyError) as e:
+                sub.run(Merging._command, shell=True)
+            #reset xsalefile to new HKL file
+            xscalefile="XDSCC12.HKL"
+        #return statement ?
+        return None
 
     def isocluster(self, xscalefile):
 
@@ -712,8 +790,9 @@ class Merging(Abstract):
                 xscale.multiplicity_check()
                 self.results['multiplicity'] = xscale.results['multiplicity']
 
-                self.aniso_check()
-                self.create_mtzs()
+                #uncommented to reduce running timew right now. G.A. 07.09.21
+                #self.aniso_check()
+                #self.create_mtzs()
 
             elif self.jshandle['experiment'] == 'inverse-beam' or self.jshandle['experiment'] == 'interleave-and-inverse-first':
                 pass
