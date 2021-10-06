@@ -11,6 +11,8 @@ import errno
 import shutil
 import time
 import subprocess as sub
+import pathlib
+import jsonschema
 
 from src.cellprobe import Cell
 import src.index_check as index_check
@@ -31,19 +33,25 @@ logger = logging.getLogger('sxdm')
 class Merging(Abstract):
     _command = "xscale_par > /dev/null"
 
-    @property
-    def getInDataScheme(self):
+    @staticmethod
+    def getInDataScheme():
         return {
             "type": "object",
-            "required": ['pathlist', 'experiment'],
             "properties": {
-                "pathlist": {
+                "xtallist": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dirlist": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "experiment": {"type": "string"},
+                "isXtal": {"type": "boolean"},
                 "suffix": {"type": "string"},
                 "reference": {"type": "string"},
                 "resolution": {"type": "string"},
@@ -55,8 +63,8 @@ class Merging(Abstract):
             }
         }
 
-    @property
-    def getOutDataScheme(self):
+    @staticmethod
+    def getOutDataScheme():
         return {
             "type": "object",
             "properties": {
@@ -127,7 +135,7 @@ class Merging(Abstract):
         try:
             outname = 'adm_' + self.jshandle['experiment']
             self.setOutputDirectory()
-            subadm = 'adm_' + str(len(self.jshandle['pathlist']))
+            subadm = 'adm_%d' % self.results['xtals_expected']
             suffix = self.jshandle.get('suffix', None)
             if suffix is not None:
                 subadm = subadm + "_" + suffix
@@ -159,13 +167,24 @@ class Merging(Abstract):
 
     def find_HKLs(self):
         hklpaths = []
+        xtallist = self.jshandle.get('xtallist', [])
+        isXtal = self.jshandle.get('isXtal', False)
+        if not isXtal:
+            for folder in self.jshandle['dirlist']:
+                dirs = pathlib.Path(folder)
+                posix = list(dirs.glob('*/*'))
+                xtallist += list(map(lambda x: str(x), posix))
+        else:
+            msg = "List of xtal folders directly provided, not searching\n"
+            logger.info(msg)
+            pass
         try:
-            self.results['xtals_expected'] = len(self.jshandle['pathlist'])
+            self.results['xtals_expected'] = len(xtallist)
 
             msg = "# of xtals expected: %d\n" %self.results['xtals_expected']
             logger.info('MSG: {}'.format(msg))
 
-            for path in self.jshandle['pathlist']:
+            for path in xtallist:
                 filepath = os.path.join(path, "XDS_ASCII.HKL")
                 if os.path.isfile(filepath):
                     hklpaths.append(filepath)
@@ -175,7 +194,7 @@ class Merging(Abstract):
 
                 else:
                     err = "couldn't find XDS_ASCII.HKLs %s" % filepath
-                    logger.error('Error:{}'.format(err))
+                    logger.info('Error:{}'.format(err))
         except KeyError as e:
             logger.error(e)
             self.setFailure()
@@ -296,7 +315,8 @@ class Merging(Abstract):
 
                 logger.info('MSG:{}'.format(msg))
                 try:
-                    run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
+                    # user = self.jshandle.get('user', " ")
+                    run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
                 except KeyError as e:
                     sub.call(Merging._command, shell=True)
 
@@ -359,6 +379,14 @@ class Merging(Abstract):
         except Exception as err:
             logger.error(err)
             self.setFailure()
+
+        self.Isa_select(config)
+        shutil.copyfile('XSCALE.LP', 'ISa_Select.LP')
+        shutil.copyfile('XSCALE.HKL', 'ISa_Select.HKL')
+        indict = {"LPfile": "ISa_Select.LP"}
+        xscale_parse = OutputParser(indict)
+        xscale_parse.parse_xscale_output(indict)
+        self.results['ISa_selection'] = xscale_parse.results
         return
 
     def xscale_for_sx(self):
@@ -399,7 +427,7 @@ class Merging(Abstract):
             msg = "Running 1st round of xscale-ing with Rmeas based ranking\n"
             logger.info('MSG:{}'.format(msg))
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getOutputDirectory())
+                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getOutputDirectory())
             except KeyError:
                 sub.call(Merging._command, shell=True)
             try:
@@ -426,7 +454,7 @@ class Merging(Abstract):
             logger.info(msg)
             self.Isa_select(config)
 
-            '''try:
+            try:
                 indict = {"LPfile": "XSCALE.LP"}
                 xscale_parse = OutputParser(indict)
                 xscale_parse.parse_xscale_output(indict)
@@ -442,7 +470,7 @@ class Merging(Abstract):
                 self.setFailure()
 
                 return
-            celldict = {"listofHKLfiles": self.results['isa_selected']}
+            celldict = {"listofHKLfiles": self.results['filelinks']}
             celler = Cell(celldict)
             celler.setter(celldict)
             if len(celler.results['hklList']) > 200:
@@ -479,7 +507,7 @@ class Merging(Abstract):
                 logger.info('MSG:{}'.format(msg))
 
                 try:
-                    run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
+                    run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
                 except (OSError, TypeError, KeyError) as e:
                     sub.call(Merging._command, shell=True)
 
@@ -504,7 +532,7 @@ class Merging(Abstract):
                 err = "xscaling after Cell selection may not work\n"
                 logger.info('OSError:{}'.format(err))
 
-            ccDict = {"xds_ascii": 'ISa_Select.HKL'}
+            ccDict = {"xds_ascii": 'noSelect.HKL'}
             CC = corc.CCestimator(ccDict)
             logger.info('ASCII loaded')
             CC.cc_select(fom='pcc')
@@ -540,7 +568,7 @@ class Merging(Abstract):
                 err = "xscaling after pair-correlation selection may not work\n"
                 logger.info('OSError:{}'.format(err))
                 self.setFailure()
-'''
+
         except Exception as e:
             logger.info('Error: {}'.format(e))
             self.setFailure()
@@ -672,7 +700,7 @@ class Merging(Abstract):
     def aniso_check(self):
         point_cmd = "pointless -xdsin noSelect.HKL hklout noSelect_point.mtz"
         try:
-            run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], point_cmd, 'pointless.log')
+            run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], point_cmd, 'pointless.log')
         except KeyError:
             point_cmd1 = "pointless -xdsin noSelect.HKL hklout noSelect_point.mtz > pointless.log"
             sub.call(point_cmd1, shell=True)
@@ -698,7 +726,7 @@ class Merging(Abstract):
             fh.close()
             aim_cmd = "aimless hklin noSelect_point.mtz hklout noSelect_aim.mtz < onlymerge.inp"
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], aim_cmd, 'aimless.log')
+                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], aim_cmd, 'aimless.log')
             except (OSError, TypeError, Exception) as e:
                 aim_cmd1 = aim_cmd + '| tee aimless.log'
                 sub.call(aim_cmd1, shell=True)
@@ -762,16 +790,9 @@ class Merging(Abstract):
     def run_(self):
 
         try:
+            # jsonschema.validate(instance=Merging.jshandle, schema=Merging.getInDataScheme())
             if self.jshandle['experiment'] == 'native-sad':
                 self.xscale_for_sad()
-                self.Isa_select()
-                shutil.copyfile('XSCALE.LP', 'ISa_Select.LP')
-                shutil.copyfile('XSCALE.HKL', 'ISa_Select.HKL')
-                indict = {"LPfile": "ISa_Select.LP"}
-                xscale_parse = OutputParser(indict)
-                xscale_parse.parse_xscale_output(indict)
-                self.results['ISa_selection'] = xscale_parse.results
-
             elif self.jshandle['experiment'] == 'serial-xtal':
                 self.xscale_for_sx()
                 indict = {'xds_ascii': 'noSelect.HKL'}
@@ -795,5 +816,22 @@ class Merging(Abstract):
         return
 
 
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG,
+    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+    datefmt='%y-%m-%d %H:%M',
+    filename='merge.log',
+    filemode='a')
 
+    import json
+    fh = open(sys.argv[1], 'r')
+    inData = json.load(fh)
+    fh.close()
 
+    mm = Merging(inData)
+    # val = jsonschema.Draft3Validator(Merging.getInDataScheme()).is_valid(inData)
+    # print(val)
+
+    mm.run_()
+    if mm.is_success():
+        mm.writeOutputData(mm.results)
