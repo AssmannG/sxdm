@@ -3,50 +3,134 @@
 #HKLPATHS="/nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD024A \
 # /nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD029A" 
 
-#HKLPATHS="/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1-b \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-4 "
+#HKLPATHS="/das/work/p16/p16141/raw_data/20201206/PXI/IMISX/proc/HTC-2-6"
 
 
-HKLPATHS="/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-f \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E9259-1 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_D3199 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F1199-1 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-2 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-e \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E3199 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F1199-2 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-D \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_C3189 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-3 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G3199-2 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8189 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G3199-1 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-1 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-2 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-2-B \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_H9259 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-B \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_C6189 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G9259 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-4 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-3 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G4199-1 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_H11259-2 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F10259-1 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G10259-1 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-5 \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-1-B \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1-b \
-/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-4 \ "
+HKLPATHS="/sls/MX/Data10-staff/e19370/20210818//Lyso_s3/minisets_20210818_142811
+/sls/MX/Data10-staff/e19370/20210818/Lyso_s1/minisets_20210818_133733 \
+/sls/MX/Data10-staff/e19370/20210818/Lyso_s4/minisets_20210818_144530 \
+/sls/MX/Data10-staff/e19370/20210818/Lyso_s2/minisets_20210818_140308  "
 
+#HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125822 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130856 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130020 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130438 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_124855 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125612 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125409 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_124552 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP3_IMISX/minisets_20210314_123855 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP3_IMISX/minisets_20210314_123607 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP3_IMISX/minisets_20210314_123006 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP3_IMISX/minisets_20210314_122505 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_120131 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_121127 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_121830 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_115933 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_115538 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP1_IMISX/minisets_20210314_132411 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP1_IMISX/minisets_20210314_133046 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP1_IMISX/minisets_20210314_133433 "
+#
+
+
+#HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_144554 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_140032 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_135811 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_144834 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_140203 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_144329 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_140712 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_140421 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_144027 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_135551 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_141443 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_142102 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_145158 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_145422 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_141118 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_145954 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_141810 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_145654 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_10mins/minisets_20210314_154959 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_10mins/minisets_20210314_155418 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_10mins/minisets_20210314_154407 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_80mins/minisets_20210314_152434 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_80mins/minisets_20210314_151829 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_80mins/minisets_20210314_152134 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_143412 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_143635 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_142902 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_143230 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_142456 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_143053 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_120mins/minisets_20210314_153208 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_150909 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_150423 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_151532 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_151211 "
+#
+
+#HKLPATHS="/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-f \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E9259-1\ 
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_D3199 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F1199-1\ 
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-2 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-e \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E3199 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F1199-2 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-D \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_C3189 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-3 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G3199-2 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8189 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G3199-1 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-1 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-2 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-2-B \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_H9259 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-B \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_C6189 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G9259 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-4 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-3 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G4199-1 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_H11259-2 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F10259-1 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G10259-1 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-5 \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-1-B \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1-b \
+#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-4  "
+
+
+#HKLPATHS="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/7
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/6
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/3
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/11"
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/14
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/5
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/2
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/4
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/1
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/13
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/16
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/9
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/12
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/15
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/10
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/8 "
 
 
 
 
 Method="serial-xtal"
 ref=" "
+
+
 
 #-----------------------------ENVIRONMENTS---------------------
 #export PYTHONPATH=$PYTHONPATH:'/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm/src'

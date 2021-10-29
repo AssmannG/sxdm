@@ -2,3 +2,4 @@
 *.pyc
 adm_serial-xtal/
 .idea/
+merge.log

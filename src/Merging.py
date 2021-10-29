@@ -168,7 +168,8 @@ class Merging(Abstract):
     def find_HKLs(self):
         hklpaths = []
         xtallist = self.jshandle.get('xtallist', [])
-        isXtal = self.jshandle.get('isXtal', False)
+        #isXtal = self.jshandle.get('isXtal', False) , use that if dirlist provided
+        isXtal = self.jshandle.get('isXtal', True)
         if not isXtal:
             for folder in self.jshandle['dirlist']:
                 dirs = pathlib.Path(folder)
@@ -231,15 +232,20 @@ class Merging(Abstract):
     def indexing_(self):
         #self.results['reference'] = self.jshandle.get('reference', self.results['hklpaths_found'][0]) # not working GA check
         self.results['reference'] = self.results['hklpaths_found'][0]
+        temp_list =[]
+        temp_list.append(self.results['hklpaths_found'][0])
+        #print(len(self.results['hklpaths_found']))
+
         try:
             for ii in range(1, len(self.results['hklpaths_found'])):
-                if not index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
-                     self.results['hklpaths_found'].pop(ii)
-                     logger.info("wrong indexing\n")
+                if index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
+                    temp_list.append(self.results['hklpaths_found'][ii])
                 else:
-                    pass
+                    logger.info("wrong indexing\n")
+            self.results['hklpaths_found'] = temp_list
         except (IndexError, ValueError) as err:
             pass
+
 
         logger.info('MSG: # of cleaned xtals %s' %len(self.results['hklpaths_found']))
         self.results['xtals_after_idx_check'] = len(self.results['hklpaths_found'])
@@ -371,7 +377,7 @@ class Merging(Abstract):
             indict = {"LPfile": "XSCALE.LP"}
             xscale_parse = OutputParser(indict)
             xscale_parse.parse_xscale_output(indict)
-            logger.info('stat_dict:{}'.format(xscale_parse.results))
+            #logger.info('stat_dict:{}'.format(xscale_parse.results))
             self.results['nSAD_xscale_stats'] = xscale_parse.results
             shutil.copyfile('XSCALE.HKL', 'nSAD.HKL')
             shutil.copyfile('XSCALE.LP', 'nSAD.LP')
@@ -435,7 +441,7 @@ class Merging(Abstract):
                 xscale_parse = OutputParser(indict)
 
                 xscale_parse.parse_xscale_output(indict)
-                logger.info('stat_dict:{}'.format(xscale_parse.results))
+                #logger.info('stat_dict:{}'.format(xscale_parse.results))
                 self.results['no_selection'] = xscale_parse.results
                 shutil.copyfile("XSCALE.INP", "noSelect.INP")
                 shutil.copyfile("XSCALE.LP", "noSelect.LP")
@@ -448,17 +454,20 @@ class Merging(Abstract):
                 return
 
             #including run_xdscc12 into merging
-            self.run_xdscc12('noSelect.HKL')
+            self.run_xdscc12_single_rejection('noSelect.HKL')
+            self.run_xdscc12_full_rejection('noSelect.HKL')
+            self.isocluster('noSelect.HKL')
 
             msg = "running xscale after ISa selection\n"
             logger.info(msg)
             self.Isa_select(config)
 
+
             try:
                 indict = {"LPfile": "XSCALE.LP"}
                 xscale_parse = OutputParser(indict)
                 xscale_parse.parse_xscale_output(indict)
-                logger.info('stat_dict:{}'.format(xscale_parse.results))
+                #logger.info('stat_dict:{}'.format(xscale_parse.results))
                 self.results['ISa_selection'] = xscale_parse.results
                 shutil.copyfile("XSCALE.INP", "ISa_Select.INP")
                 shutil.copyfile("XSCALE.LP", "ISa_Select.LP")
@@ -522,7 +531,7 @@ class Merging(Abstract):
                 xscale_parse = OutputParser(indict)
                 xscale_parse.parse_xscale_output(indict)
 
-                logger.info('stat_dict:{}'.format(xscale_parse.results))
+                #logger.info('stat_dict:{}'.format(xscale_parse.results))
                 self.results['cell_selection'] = xscale_parse.results
                 shutil.copyfile("XSCALE.INP", "Cell_Select.INP")
                 shutil.copyfile("XSCALE.LP", "Cell_Select.LP")
@@ -551,14 +560,12 @@ class Merging(Abstract):
             except (OSError, TypeError, Exception) as e :
                 sub.call(Merging._command, shell=True)
 
-
-
             try:
                 indict = {"LPfile": "XSCALE.LP"}
                 xscale_parse = OutputParser(indict)
                 xscale_parse.parse_xscale_output(indict)
 
-                logger.info('stat_dict:{}'.format(xscale_parse.results))
+                #logger.info('stat_dict:{}'.format(xscale_parse.results))
                 self.results['pCC_selection'] = xscale_parse.results
                 shutil.copyfile("XSCALE.INP", "pCC_Select.INP")
                 shutil.copyfile("XSCALE.LP", "pCC_Select.LP")
@@ -575,32 +582,131 @@ class Merging(Abstract):
 
         return
 
+    def run_xdscc12_single_rejection(self,xscalefile):
+        '''
+        runs xdscc12
+        :param xscalefile
+        :return: not defined yet
+        runs xdscc12 only once!
+        '''
+        xdscc12_cmd = "xdscc12 %s" %(xscalefile)
 
-    def run_xdscc12(self,xscalefile):
+        #run xdscc12
+        try:
+            run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], xdscc12_cmd, 'xdscc12.log')
+        except KeyError:
+            xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s >xdscc12.log 2>&1" % (xscalefile)
+            sub.run(xdscc12_cmd1, shell=True)
+
+        # calculate how many data sets should be removed (10% of the total range)
+        no_of_datasets = len(self.results['hklpaths_found'])
+        no_of_datasets_remove = int(no_of_datasets * 0.1)
+        if (no_of_datasets_remove < 1):
+            no_of_datasets_remove = 1
+        # remove data sets %
+        try:
+            fh = open("XSCALE.INP.rename_me", "r")
+            _all = fh.readlines()
+            fh.close()
+            # write new file
+            fh = open("XSCALE.INP.rename_me", "w")
+            for i in range(0, len(_all) - (no_of_datasets_remove * 2)):
+                if (_all[i].split()[0] == "OUTPUT_FILE="):
+                    fh.write("OUTPUT_FILE= XDSCC12.HKL\n")
+                else:
+                    fh.write(_all[i])
+            fh.close()
+
+            #checking if last deleted file is still negative, if not it will be appended back again
+            delta_cc12 = (_all[i + 1]).split()
+            delta_cc12 = float(delta_cc12[5])
+            if delta_cc12 >= 0:
+                start = i + 1
+                fh = open("XSCALE.INP.rename_me", "a")
+                delta_cc12_2 = 10
+                rejection_last = 0
+                while delta_cc12_2 > 0:
+                    rejection_last = rejection_last + 1
+                    delta_cc12_2 = (_all[start]).split()
+                    delta_cc12_2 = float(delta_cc12_2[5])
+                    if delta_cc12_2 < 0:
+                        pass
+                        # print("last rejected data set is", delta_cc12_2)
+                    else:
+                        fh.write(_all[start])
+                        fh.write(_all[start + 1])
+                        start = start + 2
+                        if start >= len(_all):
+                            break
+                fh.close()
+            else:
+                pass
+
+
+        except (OSError, IOError):
+            err = "XSCALE.INP.rename_me file doesn't exist"
+            logger.info('OSError:{}'.format(err))
+            self.setFailure()
+            return
+
+        # overwrite XSCALE.INP.renameMe to XSCALE.INP
+        shutil.copyfile("XSCALE.INP.rename_me","XSCALE.INP")
+
+        #xscale new file
+        try:
+            run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command,
+                        self.getLogFileName())
+        except (OSError, TypeError, KeyError) as e:
+            sub.run(Merging._command, shell=True)
+        try:
+                logger.info("running xdscc12 rejection (single) & xscale after rejection")
+                indict = {"LPfile": "XSCALE.LP"}
+                xscale_parse = OutputParser(indict)
+                xscale_parse.parse_xscale_output(indict)
+                #logger.info('stat_dict:{}'.format(xscale_parse.results))
+                self.results['xdscc12_single_selection'] = xscale_parse.results
+                shutil.copyfile("XSCALE.INP", "XDSCC12.INP")
+                shutil.copyfile("XSCALE.LP", "XDSCC12.LP")
+
+        except OSError:
+            err = "xscaling after xdscc12 (single) selection may not work\n"
+            logger.info('OSError:{}'.format(err))
+            self.setFailure()
+
+
+        return None
+
+    def run_xdscc12_full_rejection(self,xscalefile):
         '''
         runs xdscc12
         :param xscalefile: input HKL file with umerged intensities
         :return: not defined yet
-        REMARK: running from noSelect.HKL, saving of noSELECT old ?
-        '''
+        REMARK: Function builds new folder xdscc12, in which every rejection has its own folder with the final remaining and scaled data set XDSCC12_#.KHL
+        Also rejects up till no data set with negative deltacc12 is left.
 
+        '''
+        positive = False
         delta_cc12 = float(-1000)
+        reject_iterations = 0
+        # mkdir and chdir xdscc12_rejection/rejection_0
+        cwd = os.getcwd()
+        path_1 = os.path.join(cwd, 'xdscc12_rejections/rejection_0')
+        pathlib.Path(path_1).mkdir(parents=True, exist_ok=True)
+        os.chdir(path_1)
+        shutil.copyfile('../../%s' %(xscalefile), xscalefile)
         xdscc12_cmd = "xdscc12 %s" %(xscalefile)
 
-        # loop while deltacc12 <0
         while delta_cc12 <0:
+            reject_iterations = reject_iterations + 1
             #run xdscc12 with xsalefile
             try:
                 run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], xdscc12_cmd, 'xdscc12.log')
             except KeyError:
-                xdscc12_cmd1 = "xdscc12 %s >xdscc12.log" %(xscalefile)
+                xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s >xdscc12.log 2>&1" %(xscalefile)
                 sub.run(xdscc12_cmd1, shell=True)
-
-            #print(delta_cc12)
             # calculate how many data sets should be removed (10% of the total range)
             no_of_datasets = len(self.results['hklpaths_found'])
             no_of_datasets_remove= int(no_of_datasets * 0.1)
-            print(no_of_datasets_remove, 'from ', no_of_datasets, 'are removed')
             if(no_of_datasets_remove <1):
                 no_of_datasets_remove = 1
             #remove data sets %
@@ -610,35 +716,79 @@ class Merging(Abstract):
                 fh.close()
                 fh = open("XSCALE.INP.rename_me", "w")
                 for i in range(0,len(_all)-(no_of_datasets_remove*2)):
-                        if(_all[i].strip() == "OUTPUT_FILE= noSelect.HKL"):
-                            fh.write("OUTPUT_FILE= XDSCC12.HKL\n")
+                        if(_all[i].split()[0] == "OUTPUT_FILE="):
+                            fh.write("OUTPUT_FILE= XDSCC12_%s.HKL\n" %(reject_iterations-1))
                         else:
                             fh.write(_all[i])
                 fh.close()
-                # reset loop parameter
-                delta_cc12=(_all[i+1]).split()
+
+                # reset loop parameter & write last file
+                delta_cc12 = (_all[i + 1]).split()
                 delta_cc12 = float(delta_cc12[5])
-                print("worst rejected DeltaCC1/2 is", delta_cc12)
+                if delta_cc12 >= 0:
+                    positive = True
+                    start = i+1
+                    fh = open("XSCALE.INP.rename_me", "a")
+                    delta_cc12_2 = 10
+                    rejection_last = 0
+                    while delta_cc12_2 >0:
+                        rejection_last = rejection_last + 1
+                        delta_cc12_2 = (_all[start]).split()
+                        delta_cc12_2 = float(delta_cc12_2[5])
+                        if delta_cc12_2 < 0:
+                            pass
+                        else:
+                            fh.write(_all[start])
+                            fh.write(_all[start+1])
+                            start = start+2
+                            if start >= len(_all):
+                                break
+                    fh.close()
+                else:
+                    pass
+
             except (OSError, IOError):
                 err = "XSCALE.INP.rename_me file doesn't exist"
                 logger.info('OSError:{}'.format(err))
                 self.setFailure()
                 return
             #overwrite XSCALE.INP.renameMe to XSCALE.INP
-            mv_cmd = "mv XSCALE.INP.rename_me XSCALE.INP"
-            try:
-                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], mv_cmd, self.getLogFileName())
-            except:
-                sub.run(mv_cmd, shell=True)
+            logger.info("running xdscc12 rejection (full) & xscale after rejection, %s datasets are removed per step" %no_of_datasets_remove)
+            shutil.copyfile("XSCALE.INP.rename_me", "XSCALE.INP")
 
-            # run xscale, name of output file: XDSCC12.HKL
+            # substitute paths only once
+            if reject_iterations == 1:
+                sub.run("sed -i 's/INPUT_FILE=/INPUT_FILE=..\/..\//' XSCALE.INP ", shell=True)
+            else:
+                pass
+
+            # run xscale, name of output file: XDSCC12_#.HKL
             try:
                 run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
             except (OSError, TypeError, KeyError) as e:
                 sub.run(Merging._command, shell=True)
             #reset xsalefile to new HKL file
-            xscalefile="XDSCC12.HKL"
-        #return statement ?
+            xscalefile="XDSCC12_%s.HKL" %(reject_iterations-1)
+            os.chdir('..')
+            if positive:
+                os.chdir('..')
+            else:
+                cwd =os.getcwd()
+                folder_name = 'rejection_' + str(reject_iterations)
+                path_rej = os.path.join(cwd, folder_name)
+                pathlib.Path(path_rej).mkdir(exist_ok=True)
+                os.chdir(path_rej)
+                folder_name = 'rejection_' + str(reject_iterations -1)
+                try:
+                    os.symlink('../%s/%s' %(folder_name,xscalefile), xscalefile)
+                except OSError as e:
+                    if e.errno == errno.EEXIST:
+                        os.remove(xscalefile)
+                        os.symlink('../%s/%s' %(folder_name,xscalefile), xscalefile)
+                    else:
+                        pass
+
+
         return None
 
     def isocluster(self, xscalefile):
@@ -659,7 +809,6 @@ class Merging(Abstract):
 
         if os.path.isfile(self.getOutputDirectory() / "isocluster.log"):
             fkey = "best number of clusters"
-
             fh = open("isocluster.log", "r")
             _all = fh.readlines(); fh.close()
             for lines in _all:
@@ -671,7 +820,8 @@ class Merging(Abstract):
                     self.results["clusters"] = val.strip(' ')
                 else:
                     pass
-        if os.path.isfile(str(self.getOutputDirectory(),"XSCALE.1.INP")):
+
+        if os.path.isfile(str(self.getOutputDirectory())+"/XSCALE.1.INP"):
             shutil.copyfile("XSCALE.1.INP", "XSCALE.INP")
             msg = "xscale-ing over 1st cluster only..\n"
             logger.info('MSG:{}'.format(msg))
@@ -684,7 +834,7 @@ class Merging(Abstract):
                 xscale_parse = OutputParser(indict)
                 xscale_parse.parse_xscale_output(indict)
 
-                logger.info('stat_dict:{}'.format(xscale_parse.results))
+                #logger.info('stat_dict:{}'.format(xscale_parse.results))
                 shutil.copyfile("XSCALE.INP", "cluster1.INP")
                 shutil.copyfile("XSCALE.LP", "cluster1.LP")
                 shutil.copyfile("XSCALE.HKL", "cluster1.HKL")

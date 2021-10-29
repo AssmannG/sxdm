@@ -96,7 +96,7 @@ def similar_symmetry(hkl1, hklref):
 	tstdata = ASCII(xdsdict)
 	tstdata.get_data(xdsdict)
 	try:
-		return refdata.results['symm'].is_similar_symmetry(tstdata.results['symm'], relative_length_tolerance=0.15, absolute_angle_tolerance=1.5)
+		return refdata.results['symm'].is_similar_symmetry(tstdata.results['symm'], relative_length_tolerance=0.45, absolute_angle_tolerance=10.5)
 	except Exception:
 		return False
 

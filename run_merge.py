@@ -69,7 +69,8 @@ if __name__ == '__main__':
         sys.exit()
 
     inData=dict()
-    inData['pathlist'] = hklpath_list
+    # orginally it was pathlist, now xtallist or dirlist (see email shibom
+    inData['xtallist'] = hklpath_list
     inData['experiment'] = op.expt
     inData['reference'] = op.reference
     inData['resolution'] = op.res_cut

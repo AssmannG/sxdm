@@ -115,6 +115,7 @@ class OutputParser(Abstract):
             if any(k in lines for k in skip_line):
                 pass
             else:
+                # having xscale-stats in logger uncomment next line
                 logger.info(lines[:-1])
                 line = lines.split()
                 if len(line) == 14:
