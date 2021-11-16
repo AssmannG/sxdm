@@ -26,7 +26,7 @@ def run_command(logger_name, directory_name, user, command, logname):
 		logger.info('pw_record:{}'.format(pw_record))
 	except (OSError, TypeError, Exception) as e:
 		logger.info('switch to local mode'.format(e))
-	user_name      = pw_record.pw_name
+	user_name       = pw_record.pw_name
 	user_home_dir  = pw_record.pw_dir
 	user_uid       = pw_record.pw_uid
 	user_gid       = pw_record.pw_gid
@@ -45,9 +45,14 @@ def run_command(logger_name, directory_name, user, command, logname):
 	logger.info('gid:{}, uid:{}'.format(os.getegid(),os.geteuid()))
 	logger.info('user_uid: {}, user_gui: {}, user_name: {}, user_home_dir: {}'.format(user_uid, user_gid, user_name, user_home_dir))
 	output = Popen(shlex.split(command), preexec_fn=demote(user_uid, user_gid), env=env, stdout=PIPE, stderr=STDOUT).communicate()[0]
+	out = output.decode('utf-8')
 	os.setegid(pw_record.pw_gid)
 	os.seteuid(pw_record.pw_uid)
 	logger.info('Returning to user privilages')
-	with open(os.path.join(directory_name, logname), 'a+') as log:
-		log.write(output)
-	return output
+	if logname != None:
+
+		with open(os.path.join(directory_name, logname), 'a+') as log:
+                	log.write(out)
+		return output
+	else:
+		return None

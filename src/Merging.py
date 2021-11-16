@@ -134,7 +134,7 @@ class Merging(Abstract):
     def outdir_make(self):
         try:
             outname = 'adm_' + self.jshandle['experiment']
-            self.setOutputDirectory()
+            self.setOutputDirectory(self.jshandle["running_folder"])
             subadm = 'adm_%d' % self.results['xtals_expected']
             suffix = self.jshandle.get('suffix', None)
             if suffix is not None:
@@ -143,6 +143,7 @@ class Merging(Abstract):
                 pass
             subadm = self.getOutputDirectory() / outname / subadm
             subadm.mkdir(parents=True, exist_ok=True)
+            logger.info("merging folder subadm: {}".format(subadm))
             os.chdir(subadm)
             self.setOutputDirectory(path=subadm)
         except KeyError as e:
@@ -430,18 +431,19 @@ class Merging(Abstract):
             config['reference'] = sc.results['reference']
             self.create_file_links()
             self.create_inp(self.results['filelinks'], config)
-            msg = "Running 1st round of xscale-ing with Rmeas based ranking\n"
+            msg = " Running 1st round of xscale-ing with Rmeas based ranking\n"
             logger.info('MSG:{}'.format(msg))
             try:
-                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getOutputDirectory())
+                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], Merging._command, None)
             except KeyError:
                 sub.call(Merging._command, shell=True)
+
             try:
                 indict = {"LPfile": "XSCALE.LP"}
+                
                 xscale_parse = OutputParser(indict)
-
                 xscale_parse.parse_xscale_output(indict)
-                #logger.info('stat_dict:{}'.format(xscale_parse.results))
+                logger.info('stat_dict:{}'.format(xscale_parse.results))
                 self.results['no_selection'] = xscale_parse.results
                 shutil.copyfile("XSCALE.INP", "noSelect.INP")
                 shutil.copyfile("XSCALE.LP", "noSelect.LP")
@@ -589,14 +591,13 @@ class Merging(Abstract):
         :return: not defined yet
         runs xdscc12 only once!
         '''
-        xdscc12_cmd = "xdscc12 %s" %(xscalefile)
-
+        xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s" % (xscalefile)
         #run xdscc12
         try:
-            run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], xdscc12_cmd, 'xdscc12.log')
+            run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], xdscc12_cmd1, 'xdscc12.log')
         except KeyError:
-            xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s >xdscc12.log 2>&1" % (xscalefile)
-            sub.run(xdscc12_cmd1, shell=True)
+            xdscc12_cmd2 = "xdscc12 -dmax 4.0 -nbin 1 %s >xdscc12.log 2>&1" % (xscalefile)
+            sub.run(xdscc12_cmd2, shell=True)
 
         # calculate how many data sets should be removed (10% of the total range)
         no_of_datasets = len(self.results['hklpaths_found'])
@@ -694,16 +695,16 @@ class Merging(Abstract):
         pathlib.Path(path_1).mkdir(parents=True, exist_ok=True)
         os.chdir(path_1)
         shutil.copyfile('../../%s' %(xscalefile), xscalefile)
-        xdscc12_cmd = "xdscc12 %s" %(xscalefile)
 
         while delta_cc12 <0:
             reject_iterations = reject_iterations + 1
+            xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s" %(xscalefile)
             #run xdscc12 with xsalefile
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], xdscc12_cmd, 'xdscc12.log')
+                run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], xdscc12_cmd1, 'xdscc12.log')
             except KeyError:
-                xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s >xdscc12.log 2>&1" %(xscalefile)
-                sub.run(xdscc12_cmd1, shell=True)
+                xdscc12_cmd2 = "xdscc12 -dmax 4.0 -nbin 1 %s >xdscc12.log 2>&1 "  %(xscalefile)
+                sub.run(xdscc12_cmd2, shell=True)
             # calculate how many data sets should be removed (10% of the total range)
             no_of_datasets = len(self.results['hklpaths_found'])
             no_of_datasets_remove= int(no_of_datasets * 0.1)
@@ -758,16 +759,22 @@ class Merging(Abstract):
 
             # substitute paths only once
             if reject_iterations == 1:
-                sub.run("sed -i 's/INPUT_FILE=/INPUT_FILE=..\/..\//' XSCALE.INP ", shell=True)
+                sed_cmd = "sed -i 's/INPUT_FILE=/INPUT_FILE=..\/..\//' XSCALE.INP "
+                try:
+                    run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], sed_cmd, None) 
+                except KeyError:
+                    subrun(sed_cmd, shell=True)
             else:
                 pass
 
             # run xscale, name of output file: XDSCC12_#.HKL
             try:
-                run_command("Scale&Merge", self.getOutputDirectory(), self.jshandle['user'], Merging._command, self.getLogFileName())
+                run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], Merging._command, self.getLogFileName())
             except (OSError, TypeError, KeyError) as e:
                 sub.run(Merging._command, shell=True)
             #reset xsalefile to new HKL file
+            #needs a few more lines for xscale params 
+            #self.results['xdscc12_' + reject_iteration] = xscale_parse.results
             xscalefile="XDSCC12_%s.HKL" %(reject_iterations-1)
             os.chdir('..')
             if positive:
@@ -963,7 +970,7 @@ class Merging(Abstract):
         except Exception as e:
             logger.info('Error:{}'.format(e))
             self.setFailure()
-        return
+        return self.results
 
 
 if __name__ == '__main__':
