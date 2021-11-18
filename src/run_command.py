@@ -50,9 +50,8 @@ def run_command(logger_name, directory_name, user, command, logname):
 	os.seteuid(pw_record.pw_uid)
 	logger.info('Returning to user privilages')
 	if logname != None:
-
 		with open(os.path.join(directory_name, logname), 'a+') as log:
-                	log.write(out)
+			log.write(out)
 		return output
 	else:
 		return None

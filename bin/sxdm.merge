@@ -5,21 +5,21 @@
 
 #HKLPATHS="/das/work/p16/p16141/raw_data/20201206/PXI/IMISX/proc/HTC-2-6"
 
-HKLPATHS="/sls/X06DA/data/e19370/Data10/20210818/Lyso_s3/minisets_20210818_142811 \
-/sls/X06DA/data/e19370/Data10/20210818/Lyso_s1/minisets_20210818_133733 \
-/sls/X06DA/data/e19370/Data10/20210818/Lyso_s4/minisets_20210818_144530 \
-/sls/X06DA/data/e19370/Data10/20210818/Lyso_s2/minisets_20210818_140308 "
+#HKLPATHS="/sls/X06DA/data/e19370/Data10/20210818/Lyso_s3/minisets_20210818_142811 \
+#/sls/X06DA/data/e19370/Data10/20210818/Lyso_s1/minisets_20210818_133733 \
+#/sls/X06DA/data/e19370/Data10/20210818/Lyso_s4/minisets_20210818_144530 \
+#/sls/X06DA/data/e19370/Data10/20210818/Lyso_s2/minisets_20210818_140308 "
 
 #HKLPATHS="/sls/MX/Data10-staff/e19370/20210818//Lyso_s3/minisets_20210818_142811
 #/sls/MX/Data10-staff/e19370/20210818/Lyso_s1/minisets_20210818_133733 \
 #/sls/MX/Data10-staff/e19370/20210818/Lyso_s4/minisets_20210818_144530 \
 #/sls/MX/Data10-staff/e19370/20210818/Lyso_s2/minisets_20210818_140308  "
 
-#HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125822 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130856 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130020 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130438 \
+HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
+/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125822 \
+/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130856 \
+/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130020 \
+/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130438 "
 #/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_124855 \
 #/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125612 \
 #/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125409 \
@@ -138,13 +138,13 @@ ref=" "
 
 #-----------------------------ENVIRONMENTS---------------------
 #export PYTHONPATH=$PYTHONPATH:'/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm/src'
-#export SXDM="/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm"
+export SXDM="/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm"
 
 
 
 
 
 
-#python run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
-python /sls/MX/applications/git/sxdm_py38/run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
+python run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
+#python /sls/MX/applications/git/sxdm_py38/run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
 

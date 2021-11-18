@@ -50,6 +50,7 @@ class Merging(Abstract):
                         "type": "string"
                     }
                 },
+                "running_folder" :{"type": "string"},
                 "experiment": {"type": "string"},
                 "isXtal": {"type": "boolean"},
                 "suffix": {"type": "string"},
@@ -761,9 +762,11 @@ class Merging(Abstract):
             if reject_iterations == 1:
                 sed_cmd = "sed -i 's/INPUT_FILE=/INPUT_FILE=..\/..\//' XSCALE.INP "
                 try:
+                    print("sowss")
                     run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], sed_cmd, None) 
                 except KeyError:
-                    subrun(sed_cmd, shell=True)
+                    print("hier")
+                    sub.run(sed_cmd, shell=True)
             else:
                 pass
 
@@ -773,8 +776,7 @@ class Merging(Abstract):
             except (OSError, TypeError, KeyError) as e:
                 sub.run(Merging._command, shell=True)
             #reset xsalefile to new HKL file
-            #needs a few more lines for xscale params 
-            #self.results['xdscc12_' + reject_iteration] = xscale_parse.results
+
             xscalefile="XDSCC12_%s.HKL" %(reject_iterations-1)
             os.chdir('..')
             if positive:

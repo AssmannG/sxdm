@@ -75,6 +75,7 @@ if __name__ == '__main__':
     inData['reference'] = op.reference
     inData['resolution'] = op.res_cut
     inData['friedels_law'] = op.friedel
+    inData['running_folder'] = None
 
     
     mm = Merging(inData)
