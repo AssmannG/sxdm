@@ -78,7 +78,6 @@ class OutputParser(Abstract):
                 else:
                     pass
 
-
     def parse_xscale_output(self, inData):
         self.results['stat'] = []
         count = 1

@@ -60,7 +60,6 @@ if __name__ == '__main__':
     filemode='a')
 
     op = optargs()
-
     if op.root is not None and op.expt is not None:
         hklpath_list = finder(op.root, op.expt)
 
@@ -69,7 +68,7 @@ if __name__ == '__main__':
         sys.exit()
 
     inData=dict()
-    # orginally it was pathlist, now xtallist or dirlist (see email shibom
+    # orginally it was pathlist, now xtallist or dirlist (see email shibom)
     inData['xtallist'] = hklpath_list
     inData['experiment'] = op.expt
     inData['reference'] = op.reference
@@ -79,7 +78,11 @@ if __name__ == '__main__':
 
     
     mm = Merging(inData)
-
     mm.run_()
+    '''for i in mm.results:
+        print(i)'''
+    #print(mm.results['xdscc12']['xdscc12_cc12'])
+
+
     if mm.is_success():
         mm.writeOutputData(mm.results)

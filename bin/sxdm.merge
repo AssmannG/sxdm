@@ -10,16 +10,23 @@
 #/sls/X06DA/data/e19370/Data10/20210818/Lyso_s4/minisets_20210818_144530 \
 #/sls/X06DA/data/e19370/Data10/20210818/Lyso_s2/minisets_20210818_140308 "
 
-#HKLPATHS="/sls/MX/Data10-staff/e19370/20210818//Lyso_s3/minisets_20210818_142811
-#/sls/MX/Data10-staff/e19370/20210818/Lyso_s1/minisets_20210818_133733 \
-#/sls/MX/Data10-staff/e19370/20210818/Lyso_s4/minisets_20210818_144530 \
-#/sls/MX/Data10-staff/e19370/20210818/Lyso_s2/minisets_20210818_140308  "
+HKLPATHS="/sls/MX/Data10-staff/e19370/20210818//Lyso_s3/minisets_20210818_142811
+/sls/MX/Data10-staff/e19370/20210818/Lyso_s1/minisets_20210818_133733 \
+/sls/MX/Data10-staff/e19370/20210818/Lyso_s4/minisets_20210818_144530 \
+/sls/MX/Data10-staff/e19370/20210818/Lyso_s2/minisets_20210818_140308  "
 
-HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
-/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125822 \
-/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130856 \
-/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130020 \
-/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130438 "
+# problematic data set with 37 data sets 
+#HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125822 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130856 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130020 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130438 "
+
+#HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125822 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130856 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130020 \
+#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130438 \
 #/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_124855 \
 #/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125612 \
 #/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125409 \

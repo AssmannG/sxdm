@@ -13,6 +13,8 @@ import time
 import subprocess as sub
 import pathlib
 import jsonschema
+import matplotlib.pyplot as plt
+import numpy as np
 
 from src.cellprobe import Cell
 import src.index_check as index_check
@@ -23,6 +25,7 @@ from src.scale_utl import ScaleUtils
 from src.ascii import ASCII
 from src.dendro2highcharts import dendro2highcharts
 import src.correlation as corc
+
 
 from src.abstract import Abstract
 
@@ -441,9 +444,9 @@ class Merging(Abstract):
 
             try:
                 indict = {"LPfile": "XSCALE.LP"}
-                
                 xscale_parse = OutputParser(indict)
                 xscale_parse.parse_xscale_output(indict)
+                #print( self.results['stat'])
                 logger.info('stat_dict:{}'.format(xscale_parse.results))
                 self.results['no_selection'] = xscale_parse.results
                 shutil.copyfile("XSCALE.INP", "noSelect.INP")
@@ -457,13 +460,21 @@ class Merging(Abstract):
                 return
 
             #including run_xdscc12 into merging
-            self.run_xdscc12_single_rejection('noSelect.HKL')
-            self.run_xdscc12_full_rejection('noSelect.HKL')
-            self.isocluster('noSelect.HKL')
-
+            if len(self.results['hklpaths_found']) >= 30:
+                #logger.info(" XDSCC12_SINGLE RUNNING --> XDSCC12.HKL")
+                #self.run_xdscc12_single_rejection('noSelect.HKL')
+                logger.info(" XDSCC12_FULL RUNNING --> xdscc12_rejections")
+                self.run_xdscc12_full_rejection('noSelect.HKL')
+                logger.info(" xscale_isocluster RUNNING --> iso.pdb")
+                self.isocluster('noSelect.HKL')
+                self.plot_results_to_pdf()
+            else:
+                logger.info(" XDSCC12_SINGLE RUNNING --> XDSCC12.HKL")
+                self.run_xdscc12_single_rejection('noSelect.HKL')
             msg = "running xscale after ISa selection\n"
             logger.info(msg)
             self.Isa_select(config)
+
 
 
             try:
@@ -687,6 +698,7 @@ class Merging(Abstract):
         Also rejects up till no data set with negative deltacc12 is left.
 
         '''
+
         positive = False
         delta_cc12 = float(-1000)
         reject_iterations = 0
@@ -696,21 +708,54 @@ class Merging(Abstract):
         pathlib.Path(path_1).mkdir(parents=True, exist_ok=True)
         os.chdir(path_1)
         shutil.copyfile('../../%s' %(xscalefile), xscalefile)
-
+        self.results['xdscc12'] ={}
+        self.results['xdscc12']['xdscc12_cc12'] = []
+        self.results['xdscc12']['xdscc12_cc12ano'] = []
         while delta_cc12 <0:
             reject_iterations = reject_iterations + 1
-            xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s" %(xscalefile)
+            xdscc12_cmd1 = "xdscc12 -dmax 3.0 -nbin 1 %s" %(xscalefile)
             #run xdscc12 with xsalefile
             try:
                 run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], xdscc12_cmd1, 'xdscc12.log')
             except KeyError:
-                xdscc12_cmd2 = "xdscc12 -dmax 4.0 -nbin 1 %s >xdscc12.log 2>&1 "  %(xscalefile)
+                xdscc12_cmd2 = "xdscc12 -dmax 3.0 -nbin 1 %s >xdscc12.log 2>&1 "  %(xscalefile)
                 sub.run(xdscc12_cmd2, shell=True)
+            #------------------------------------extracting results from xdscc12.log------------
+            try:
+                filename = 'xdscc12.log'
+                if not os.path.isfile(filename):
+                    e = IOERROR("%s file does not exist\n" % sfilename)
+                    logger.error(e)
+                    self.setFailure()
+                    return
+
+                fh = open(filename, 'r')
+                for i in fh.readlines():
+                    if not i.strip():
+                        continue
+                    if i:
+                        line = i.split()
+                        if line[0] == 'overall':
+                            if line[1] == 'CC1/2:':
+                                self.results['xdscc12']['xdscc12_cc12'].append(line[2])
+                            else:
+                                pass
+                                self.results['xdscc12']['xdscc12_cc12ano'].append(line[2])
+                        else:
+                            pass
+                fh.close()
+                #--------------------------------------------------------------------------------
+            except OSError:
+                err = "data extraction after xdscc12 (full) selection may not work\n"
+                logger.info('OSError:{}'.format(err))
+                self.setFailure()
+
             # calculate how many data sets should be removed (10% of the total range)
             no_of_datasets = len(self.results['hklpaths_found'])
-            no_of_datasets_remove= int(no_of_datasets * 0.1)
+            no_of_datasets_remove= int(no_of_datasets * 0.01)
             if(no_of_datasets_remove <1):
                 no_of_datasets_remove = 1
+            self.results["number_datasets_removed"]= no_of_datasets_remove
             #remove data sets %
             try:
                 fh = open("XSCALE.INP.rename_me", "r")
@@ -762,10 +807,8 @@ class Merging(Abstract):
             if reject_iterations == 1:
                 sed_cmd = "sed -i 's/INPUT_FILE=/INPUT_FILE=..\/..\//' XSCALE.INP "
                 try:
-                    print("sowss")
                     run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], sed_cmd, None) 
                 except KeyError:
-                    print("hier")
                     sub.run(sed_cmd, shell=True)
             else:
                 pass
@@ -775,8 +818,9 @@ class Merging(Abstract):
                 run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], Merging._command, self.getLogFileName())
             except (OSError, TypeError, KeyError) as e:
                 sub.run(Merging._command, shell=True)
-            #reset xsalefile to new HKL file
 
+
+            #reset xsalefile to new HKL file
             xscalefile="XDSCC12_%s.HKL" %(reject_iterations-1)
             os.chdir('..')
             if positive:
@@ -797,7 +841,7 @@ class Merging(Abstract):
                     else:
                         pass
 
-
+        #self.plot_results_to_pdf()
         return None
 
     def isocluster(self, xscalefile):
@@ -854,7 +898,95 @@ class Merging(Abstract):
                 logger.info('OSError:{}'.format(err))
                 self.setFailure()
                 return
+
+        self.results['xscale_iso'] = {}
+        self.results['xscale_iso']['x-coords']= []
+        self.results['xscale_iso']['y-coords']= []
+        self.results['xscale_iso']['z-coords']= []
+        fh = open("iso.pdb", "r")
+        _all = fh.readlines()
+        fh.close()
+        for i in _all:
+            line = i.split()
+            if line[0] == "HETATM":
+                self.results['xscale_iso']['x-coords'].append(float(line[6]))
+                self.results['xscale_iso']['y-coords'].append(float(line[7]))
+                self.results['xscale_iso']['z-coords'].append(float(line[8]))
+            else:
+                pass
         return
+
+
+    def plot_results_to_pdf(self):
+        '''
+        plots results from xdscc12 and isocluster
+        '''
+        print("this is in plot")
+        cm = 1/2.54
+        plt.figure(num=None, figsize=(21.0*cm,29.7*cm), dpi=100)
+        #-----------------------------------------------------------------------------
+        plt.subplot2grid((4, 2), (0, 0), rowspan=1, colspan=2)
+        y= self.results['xdscc12']['xdscc12_cc12']
+        if len(y) > 1000:
+            x = np.arange(0,len(y), step =100)
+        elif len(y) > 100:
+            x = np.arange(0,len(y), step =10)
+        else:
+            x = np.arange(0,len(y), step =1)
+        y_float =list(np.float_(y))
+        plt.scatter(x,y_float)
+        plt.plot(x,y_float)
+        plt.ylabel('CC1/2 [%]')
+        plt.xlabel('Rejection Iteration')
+        plt.title(" A: Change of CC$_{1/2}$ (isomorphous signal)")
+        plt.xticks(x)
+        plt.ticklabel_format(useOffset=False, style='plain')
+
+        #-------------------------------------------------------------------------
+        plt.subplot2grid((4, 2), (1, 0), colspan=2)
+        y1 = self.results['xdscc12']['xdscc12_cc12ano']
+        y1_float =list(np.float_(y1))
+        plt.scatter(x,y1_float)
+        plt.plot(x,y1_float)
+        plt.ylabel('CC1/2_ano [%]')
+        plt.xlabel('Rejection Iteration')
+        plt.title(" B: Change of CC$_{1/2_ano}$ (anomalous signal)")
+        plt.xticks(x)
+        b=3
+        plt.ticklabel_format(useOffset=False, style='plain')
+        # -----------------------------------------------------------------------
+        plt.figtext(0.1, 0.34, u'Plots A and B show the CC$_{1/2(ano)}$ of all remaining data sets for every rejection \n'
+                               u'iteration according to XDSCC12$^{1}$. Rejection is automatically terminated as soon \n'
+                               u'as data sets with positive ΔCC$_{1/2(ano)}$ are rejected, %s data set(s) is(are) rejected per  \n'
+                               u'iteration (total number of data sets: %s).\n'
+                               u'Plots C and D represent a 3D scaling analysis (XSCALE_ISOCLUSTER$^{2}$) in x-y \n'
+                               u'and x-z direction of all data sets. Further information can be found in: \n'
+                               u'$^{1}$ https://journals.iucr.org/d/issues/2020/07/00/rr5197/ and \n'
+                               u'$^{2}$ https://journals.iucr.org/d/issues/2017/04/00/rr5141/' %(self.results['number_datasets_removed'],len(self.results['hklpaths_found'])), fontsize=12)
+        #-----------------------------------iso.pdb-------------------------------
+        plt.subplot2grid((4, 2), (3, 0), colspan=1)
+        plt.subplots_adjust(hspace=0.5)
+        x2 = self.results['xscale_iso']['x-coords']
+        y2 = self.results['xscale_iso']['y-coords']
+        z2 = self.results['xscale_iso']['z-coords']
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title(" C: scaling analysis x-y")
+        plt.scatter(x2, y2, marker= '.')
+        #-----------------------------------------------------------------------
+        plt.subplot2grid((4, 2), (3, 1), colspan=1)
+        x2 = self.results['xscale_iso']['x-coords']
+        y2 = self.results['xscale_iso']['y-coords']
+        z2 = self.results['xscale_iso']['z-coords']
+        plt.xlabel('x')
+        plt.ylabel('z')
+        plt.title(" D: scaling analysis x-z")
+        plt.scatter(x2, z2,marker ='.')
+        #-----------------------------------------------------------------------
+        plt.savefig("results_xdscc12.pdf")
+
+        print("end of plot")
+        return None
 
     def aniso_check(self):
         point_cmd = "pointless -xdsin noSelect.HKL hklout noSelect_point.mtz"
