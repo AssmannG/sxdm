@@ -7,11 +7,11 @@ __refactordate__ = "25/05/2021"
 import sys, os
 import numpy as np
 import logging
-from src.ascii import ASCII
-from src.cellprobe import Cell
+from ascii import ASCII
+from cellprobe import Cell
 import multiprocessing as mp
 import scipy.cluster.hierarchy as sch
-from src.abstract import Abstract
+from abstract import Abstract
 
 logger = logging.getLogger('sxdm')
 

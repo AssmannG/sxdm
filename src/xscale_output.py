@@ -6,7 +6,7 @@ __refactordate__ = "07/05/2021"
 
 import os, sys
 import logging
-from src.abstract import Abstract
+from abstract import Abstract
 
 logger = logging.getLogger('sxdm')
 

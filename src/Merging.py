@@ -16,18 +16,18 @@ import jsonschema
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.cellprobe import Cell
-import src.index_check as index_check
-from src.space_group_lib import *
-from src.xscale_output import OutputParser
-from src.run_command import *
-from src.scale_utl import ScaleUtils
-from src.ascii import ASCII
-from src.dendro2highcharts import dendro2highcharts
-import src.correlation as corc
+from cellprobe import Cell
+import index_check as index_check
+from space_group_lib import *
+from xscale_output import OutputParser
+from run_command import *
+from scale_utl import ScaleUtils
+from ascii import ASCII
+from dendro2highcharts import dendro2highcharts
+import correlation as corc
 
 
-from src.abstract import Abstract
+from abstract import Abstract
 
 
 logger = logging.getLogger('sxdm')
@@ -142,10 +142,11 @@ class Merging(Abstract):
             subadm = 'adm_%d' % self.results['xtals_expected']
             suffix = self.jshandle.get('suffix', None)
             if suffix is not None:
-                subadm = subadm + "_" + suffix
+                outname = outname + "_" + suffix
             else:
                 pass
             subadm = self.getOutputDirectory() / outname / subadm
+            self.results['merge_output_path'] = subadm
             subadm.mkdir(parents=True, exist_ok=True)
             logger.info("merging folder subadm: {}".format(subadm))
             os.chdir(subadm)
@@ -471,6 +472,8 @@ class Merging(Abstract):
             else:
                 logger.info(" XDSCC12_SINGLE RUNNING --> XDSCC12.HKL")
                 self.run_xdscc12_single_rejection('noSelect.HKL')
+                logger.info(" xscale_isocluster RUNNING --> iso.pdb")
+                self.isocluster('noSelect.HKL')
             msg = "running xscale after ISa selection\n"
             logger.info(msg)
             self.Isa_select(config)
@@ -860,7 +863,9 @@ class Merging(Abstract):
             self.setFailure()
             return
 
-        if os.path.isfile(self.getOutputDirectory() / "isocluster.log"):
+        self.results['clusters'] = 1 
+        # quick fix for adm - needs to be investiagted GA 3.12.2021
+        ''' if os.path.isfile(self.getOutputDirectory() / "isocluster.log"):
             fkey = "best number of clusters"
             fh = open("isocluster.log", "r")
             _all = fh.readlines(); fh.close()
@@ -872,7 +877,7 @@ class Merging(Abstract):
                     val = line[-1].strip('\n')
                     self.results["clusters"] = val.strip(' ')
                 else:
-                    pass
+                    pass'''
 
         if os.path.isfile(str(self.getOutputDirectory())+"/XSCALE.1.INP"):
             shutil.copyfile("XSCALE.1.INP", "XSCALE.INP")
@@ -950,7 +955,7 @@ class Merging(Abstract):
         plt.plot(x,y1_float)
         plt.ylabel('CC1/2_ano [%]')
         plt.xlabel('Rejection Iteration')
-        plt.title(" B: Change of CC$_{1/2_ano}$ (anomalous signal)")
+        plt.title(" B: Change of CC$_{1/2\_ano}$ (anomalous signal)")
         plt.xticks(x)
         b=3
         plt.ticklabel_format(useOffset=False, style='plain')
@@ -999,8 +1004,13 @@ class Merging(Abstract):
 
         if os.path.isfile(str(self.getOutputDirectory() / "noSelect_point.mtz")):
 
-            fh = open("onlymerge.inp", 'w')
-            fh.write("ONLYMERGE\n")
+            fh = open("onlymerge.sh", 'w')
+            input_file ="""#!/bin/bash
+            aimless hklin noSelect_point.mtz hklout noSelect_aim.mtz <<EOF
+            ONLYMERGE
+            EOF
+            """
+            fh.write(input_file)
             try:
                 from iotbx import reflection_file_reader
                 mtzfile = reflection_file_reader.any_reflection_file("noSelect_point.mtz")
@@ -1015,9 +1025,11 @@ class Merging(Abstract):
                 logger.info('iotbx-import-error:{}'.format(err))
                 fh.write("run 1 batch %d to %d\n" %(1, 50))
             fh.close()
-            aim_cmd = "aimless hklin noSelect_point.mtz hklout noSelect_aim.mtz < onlymerge.inp"
+            change_permission = sub.call(["chmod", "755", "onlymerge.sh"])
+            aim_cmd = "./onlymerge.sh"
+            #aim_cmd = "aimless hklin noSelect_point.mtz hklout noSelect_aim.mtz < onlymerge.inp > aimless.log"
             try:
-                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], aim_cmd, 'aimless.log')
+                run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], aim_cmd, "aimless.log")
             except (OSError, TypeError, Exception) as e:
                 aim_cmd1 = aim_cmd + '| tee aimless.log'
                 sub.call(aim_cmd1, shell=True)
@@ -1063,9 +1075,10 @@ class Merging(Abstract):
         return
 
     def create_mtzs(self):
-        lst_of_hkls = ['noSelect.HKL', 'ISa_Select.HKL', 'Cell_Select.HKL', 'pCC_Select.HKL']
+        lst_of_hkls = ['noSelect.HKL','XDSCC12.HKL', 'ISa_Select.HKL', 'Cell_Select.HKL', 'pCC_Select.HKL']
         indata_ascii = {"mtz_format": "CCP4_I+F",
                         "resolution": float(self.jshandle['resolution']),
+                        "user": self.jshandle['user'],
                         }
         for hklfile in lst_of_hkls:
             if os.path.isfile(hklfile):
@@ -1092,9 +1105,9 @@ class Merging(Abstract):
                 xscale.multiplicity_check()
                 self.results['multiplicity'] = xscale.results['multiplicity']
 
-                #uncommented to reduce running timew right now. G.A. 07.09.21
-                #self.aniso_check()
-                #self.create_mtzs()
+                self.aniso_check()
+                self.create_mtzs()
+                print("end of functions sxdm")
 
             elif self.jshandle['experiment'] == 'inverse-beam' or self.jshandle['experiment'] == 'interleave-and-inverse-first':
                 pass
@@ -1104,6 +1117,7 @@ class Merging(Abstract):
         except Exception as e:
             logger.info('Error:{}'.format(e))
             self.setFailure()
+        print("returning results to adm after this message, end of run function")
         return self.results
 
 

@@ -5,9 +5,9 @@ __refactordate__ =  "11/05/2021"
 import time
 import errno
 import re
-from src.run_command import *
+from run_command import *
 import subprocess as sub
-from src.abstract import Abstract
+from abstract import Abstract
 
 
 logger = logging.getLogger("sxdm")
@@ -221,8 +221,8 @@ class ASCII(Abstract):
         rootname = namelist[0]
         mtzname = str(rootname + "_" + form + ".mtz")
 
-        xdsconv_cmd = 'xdsconv > /dev/null'
-        f2mtz_cmd = 'f2mtz HKLOUT %s < F2MTZ.INP > /dev/null' %mtzname
+        #xdsconv_cmd = "xdsconv"
+        #f2mtz_cmd = 'f2mtz HKLOUT %s < F2MTZ.INP ' %mtzname
 
         fh = open('XDSCONV.INP', 'w')
         fh.write("OUTPUT_FILE=temp.hkl  %s\n" %form)
@@ -233,20 +233,23 @@ class ASCII(Abstract):
         fh.close()
         logger.info("running xdsconv")
 
+        fh = open("xdsconv_f2mtz.sh", 'w')
+        input_file = """#!/bin/bash
+        xdsconv 
+        f2mtz HKLOUT %s <F2MTZ.INP 
+        """ %mtzname
+        fh.write(input_file)
+        fh.close()
+        xdsconv_cmd = './xdsconv_f2mtz.sh'
+        change_permission = sub.call(["chmod", "755", "xdsconv_f2mtz.sh"])
+        #run_command("sxdm", os.getcwd(), inData['user'], xdsconv_cmd, 'xdsconv_f2mtz.log')
+	
         try:
-            run_command("sxdm", self.getOutputDirectory(), inData['user'], xdsconv_cmd, 'xdsconv.log')
+            run_command("sxdm", os.getcwd(), inData['user'], xdsconv_cmd, 'xdsconv_f2mtz.log')
         except KeyError:
             sub.call(xdsconv_cmd, shell=True)
-        time.sleep(2)
-        if os.path.isfile('F2MTZ.INP'):
-            try:
-                run_command("sxdm", self.getOutputDirectory(), inData['user'], f2mtz_cmd, 'xdsconv.log')
-            except KeyError:
-                sub.call(f2mtz_cmd, shell=True)
-            time.sleep(2)
-            os.remove('temp.hkl')
-        else:
-            logger.info('f2mtz_error:{}'.format('xdsconv did not run\n'))
+            logger.info('f2mtz_error:{}'.format('xdsconv + f2mtz did run for offline processing, check with developer\n'))
+        os.remove('temp.hkl')
         return
 
 if __name__ == '__main__':

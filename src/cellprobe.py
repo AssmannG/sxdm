@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import scipy.cluster.hierarchy as sch
 import logging
-from src.abstract import Abstract
+from abstract import Abstract
 
 logger = logging.getLogger('sxdm')
 

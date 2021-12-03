@@ -6,8 +6,8 @@ __refactordate__ = "07/05/2021"
 
 import sys
 import subprocess as sub
-from src.ascii import ASCII
-from src.run_command import *
+from ascii import ASCII
+from run_command import *
 
 logger = logging.getLogger('sxdm')
 

@@ -6,8 +6,8 @@ __refactordate__ = "10/05/2021"
 
 import os, sys,glob
 import logging
-from src.abstract import Abstract
-from src.xscale_output import OutputParser
+from abstract import Abstract
+from xscale_output import OutputParser
 
 logger = logging.getLogger('sxdm')
 
