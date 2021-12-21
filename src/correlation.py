@@ -12,6 +12,9 @@ from cellprobe import Cell
 import multiprocessing as mp
 import scipy.cluster.hierarchy as sch
 from abstract import Abstract
+from sklearn.cluster import DBSCAN
+from scipy.spatial import distance
+from itertools import islice
 
 logger = logging.getLogger('sxdm')
 
@@ -154,6 +157,19 @@ class CCestimator(Abstract):
             self.results['pcc_arr'][k][k] = 1.0
         return
 
+
+    def transform_ivl_to_list(self,ivl_list):
+        #transforms the entries of ivl to a list with the number of entries
+        newlist=[]
+        table = str.maketrans({"(":None, ")":None})
+        for i in range(0, len(ivl_list)):
+            if ivl_list[i][0]=="(":
+                num =ivl_list[i].translate(table)
+                newlist.append(int(num))
+            else:
+                newlist.append(1)
+        return(newlist)
+
     def pool_matrix(self):
         datasize = len(self.results['setlist'])
         for j in range(datasize):
@@ -219,9 +235,46 @@ class CCestimator(Abstract):
                 cc_cluster_hkl = self.results['setlist'][item]
                 self.results['cc_cluster_list'].append(cc_cluster_hkl)
 
-            logger.info('data_points_cc:{}'.format(self.results['data_points']))
-            self.results['cc_dendo'] = sch.dendrogram(Y, labels=self.results['data_points'], no_plot=True)
-            #sch.dendrogram(Y, truncate_mode='level', show_contracted=True, leaf_rotation=90)
+            #defining p1 = number of leaves for truncation according to teh data set size 
+            if len(self.results['setlist']) >100:
+                p1 = 50
+            elif len(self.results['setlist']) >50: 
+                p1 = 35
+            elif len(self.results['setlist']) >20:
+                p1 = 20
+            elif len(self.results['setlist']) >10:
+                p1 = 10
+            else:
+                p1 =5 
+
+            # estimating truncation params, pclu 
+            CC=distance.cdist(self.results['pcc_arr_symm'],self.results['pcc_arr_symm'],'euclidean')
+            clustering = DBSCAN(eps=np.median(CC[np.triu_indices(len(CC), k=1)]), min_samples=1).fit(CC)
+            pclu=len(set(clustering.labels_))
+            print(pclu, "pclu")
+            logger.info('truncation level for pCC dendrogramm acording to cell constants was estimated')
+            if pclu < p1:
+                p1=pclu
+            else:
+                logger.info('truncation level for dendrogram is smaller than the estimated trunc levelby clustering')
+
+
+            p1 =5
+            # assigning labels for dendrogram function
+            dn_wo_trunc = sch.dendrogram(Y, labels = self.results['data_points'], no_plot=True)
+            dn_w_trunc = sch.dendrogram(Y, p = p1,truncate_mode='lastp', no_plot=True)
+            chunk_list = self.transform_ivl_to_list(dn_w_trunc['ivl'])
+            it = iter(dn_wo_trunc['ivl'])
+            sliced_list_with_labels =[list(islice(it, 0, i)) for i in chunk_list]
+            newlist = []
+            for i in range(0, len(sliced_list_with_labels)):
+                table = str.maketrans({"x":None, "t":None, "a":None,"l":None,"_":None})
+                tmp=','.join(sliced_list_with_labels[i])
+                tmp=tmp.translate(table)
+                newlist.append(tmp)
+            # execute actual dendrogram and store 
+            self.results['cc_dendo'] = sch.dendrogram(Y,p = p1, truncate_mode = 'lastp', no_plot=True)
+            self.results['cc_dendo']['newlabel']= newlist
         except Exception as e:
             logger.info('From_cc_cluster_func:{}'.format(e))
         return

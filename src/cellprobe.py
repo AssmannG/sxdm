@@ -7,12 +7,14 @@ __refactordate__ = "25/05/2021"
 
 import sys, os
 import numpy as np
-
+from itertools import islice
 import matplotlib.pyplot as plt
 from scipy import stats
 import scipy.cluster.hierarchy as sch
 import logging
 from abstract import Abstract
+from sklearn.cluster import DBSCAN
+from scipy.spatial import distance
 
 logger = logging.getLogger('sxdm')
 
@@ -135,6 +137,20 @@ class Cell(Abstract):
 
         return indices
 
+    def transform_ivl_to_list(self, ivl_list):
+        newlist=[]
+        table = str.maketrans({"(":None, ")":None})
+        for i in range(0, len(ivl_list)):
+            if ivl_list[i][0]=="(":
+                num =ivl_list[i].translate(table)
+                newlist.append(int(num))
+            else:
+                newlist.append(1)
+        return(newlist)
+
+
+
+
     def clustering(self, inData):
         self.setter(inData)
         self.lcv_()
@@ -181,8 +197,48 @@ class Cell(Abstract):
 
         logger.info('Cell selection # HKLs: %d' %len(self.results['cell_select']))
 
-        self.results['dendo'] = sch.dendrogram(Y, p=10, labels=self.results['data_points'], no_plot=True)
-        #logger.info('dendrogram switched off')
+        #defining p1 = number of leaves for truncation of dendrogram according to the data set size
+        if (len(self.results['cell_select'])) >100:
+            p1 = 50
+        elif len(self.results['cell_select']) >50:
+            p1 = 35
+        elif len(self.results['cell_select']) >20:
+            p1 = 20
+        elif len(self.results['cell_select']) >10:
+            p1 = 10
+        else:
+            p1 = len(self.results['cell_select'])
+
+        #
+        #defining p by clustering according to the median of the distances of the uc constants
+        #useful if data are very similar, to avoid "wrong" leaves with height 0
+        #if p_clu defined by clustering is smaller than the p1 defined above (according to data size),p_clu is preferred
+
+        CC=distance.cdist(self.results['cell_vector'],self.results['cell_vector'],'euclidean')
+        clustering = DBSCAN(eps=np.median(CC[np.triu_indices(len(CC), k=1)]), min_samples=1).fit(CC)
+        pclu=len(set(clustering.labels_))
+        logger.info('truncation level for dendrogramm acording to cell constants was estimated')
+        if pclu < p1:
+            p1 = pclu
+        else:
+            logger.info('truncation level for dendrogram is smaller than the etsimated truncation level by clustering')
+
+        #assigment 
+        dn_wo_trunc = sch.dendrogram(Y, labels = self.results['data_points'], no_plot=True)
+        dn_w_trunc = sch.dendrogram(Y, p = p1,truncate_mode='lastp', no_plot=True)
+        chunk_list = self.transform_ivl_to_list(dn_w_trunc['ivl'])
+        it = iter(dn_wo_trunc['ivl'])
+        sliced_list_with_labels =[list(islice(it, 0, i)) for i in chunk_list]
+        newlist = []
+        for i in range(0, len(sliced_list_with_labels)):
+            table = str.maketrans({"x":None, "t":None, "a":None,"l":None,"_":None})
+            tmp=','.join(sliced_list_with_labels[i])
+            tmp=tmp.translate(table)
+            newlist.append(tmp)
+
+        #self.results['dendo'] = sch.dendrogram(Y, labels=self.results['data_points'])
+        self.results['dendo'] = sch.dendrogram(Y, p=p1,truncate_mode= 'lastp', no_plot=True)
+        self.results['dendo']['newlabel'] = newlist
 
         return
 
@@ -191,7 +247,7 @@ class Cell(Abstract):
         tmp_fileList = [] #Local variable - a list of lists
 
         for i in range(len(self.results['hkllist'])):
-            unit_cell = self.get_cells(self.results['hkllist'][i])
+            unit_cell = self.get_cells(self.results['hkllist'])
 
 
             self.results['cell_ar'][i,0] = unit_cell['a']

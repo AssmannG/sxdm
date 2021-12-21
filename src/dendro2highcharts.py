@@ -7,7 +7,7 @@
 # dendro_formatted = dendro2highcharts(scipy_dendro)
 
 import json
-
+import matplotlib.pyplot as plt
 def dendro2highcharts(dendro_dict):
     '''Function that converts output of scipy.cluster.hierarchy.dendrogram
        to data that can be easily plot using Highcharts.js scatterplot
@@ -18,8 +18,9 @@ def dendro2highcharts(dendro_dict):
     try:
         X = dendro_dict['icoord']
         Y = dendro_dict['dcoord']
-        leaves = dendro_dict['ivl']
+        leaves = dendro_dict['newlabel']
         colors = dendro_dict['color_list']
+	
     except KeyError as e:
         raise Exception('dendro2highcharts: Required key not found in dendro_dict: {}'.format(e))
     sorted_by_colors = {}
@@ -39,8 +40,15 @@ def dendro2highcharts(dendro_dict):
             sorted_by_colors[color].append(elem)
             if j == 3:
                 sorted_by_colors[color].append(None)
-            if y[j] == 0:
-                leaves_indices.append(x[j])
+                if y[j] == 0:
+                    leaves_indices.append(x[j])
+            if j == 0:
+                if y[j] == 0:
+                    leaves_indices.append(x[j])
+            #checking if branches 
+            if j == 0:
+                if y[j] == 0 and y[j+1] == 0 and y[j+2] ==0:
+                    logger.info(" Leaves with height zero, needs further truncation")
 
     # Sort the labels in the ascending orders
     leaves_indices.sort()
@@ -51,8 +59,11 @@ def dendro2highcharts(dendro_dict):
         d = sorted_by_colors[k]
         series.append({'data':d})
 
-    # Associates leaf labesl with its position on x_axis
+    # Associates leaf labels with its position on x_axis
     for i, x in enumerate(leaves_indices):
+        if i == len(leaves):
+            logger.info(" Error - somthing is wrong in dendro2highcharts.py")
+            break
         l = leaves[i]
         x = '{}{}'.format('x',int(x))
         x_labels[x] = l

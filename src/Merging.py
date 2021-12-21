@@ -146,7 +146,9 @@ class Merging(Abstract):
             else:
                 pass
             subadm = self.getOutputDirectory() / outname / subadm
+            #print(type(subadm))
             self.results['merge_output_path'] = subadm
+            #print(type(self.results['merge_output_path']))
             subadm.mkdir(parents=True, exist_ok=True)
             logger.info("merging folder subadm: {}".format(subadm))
             os.chdir(subadm)
@@ -507,6 +509,7 @@ class Merging(Abstract):
                 celler.clustering(celldict)
                 self.results['cell_array'] = celler.results['cell_ar_best_cluster'].tolist()
                 self.results['dendro_labels'] = celler.results['data_points']
+                self.results['histogram'] = None  # quick fix, bullshit, needs to be investigated - what should happen ? GA 8.12.2021
 
 
 
@@ -516,6 +519,8 @@ class Merging(Abstract):
             # self.results['unit-cell'] = mode_cells
             # convert dendro dictionary for easy plottable dictionary in adp tracker
             try:
+                msg = "Dendrogram from unit cell constants is created"
+                logger.info('MSG:{}'.format(msg))
                 self.results['cell_dendrogram'] = dendro2highcharts(celler.results['dendo'])
                 # self.scale_results['hclust_matrix'] = celler.hclust_matrix
                 self.results['cell_n_clusters'] = celler.results['n_clusters_cell']
@@ -563,6 +568,8 @@ class Merging(Abstract):
             logger.info('ASCII loaded')
             CC.cc_select(fom='pcc')
             try:
+                msg = "Dendrogram from CCs is created"
+                logger.info('MSG:{}'.format(msg))
                 self.results['cc_dendrogram'] = dendro2highcharts(CC.results['cc_dendo'])
                 self.results['cc_n_clusters'] = CC.results['n_clusters_cc']
                 self.results['hkl_cc_sorted'] = CC.results['cc_cluster_list']
@@ -716,12 +723,12 @@ class Merging(Abstract):
         self.results['xdscc12']['xdscc12_cc12ano'] = []
         while delta_cc12 <0:
             reject_iterations = reject_iterations + 1
-            xdscc12_cmd1 = "xdscc12 -dmax 3.0 -nbin 1 %s" %(xscalefile)
+            xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s" %(xscalefile)
             #run xdscc12 with xsalefile
             try:
                 run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], xdscc12_cmd1, 'xdscc12.log')
             except KeyError:
-                xdscc12_cmd2 = "xdscc12 -dmax 3.0 -nbin 1 %s >xdscc12.log 2>&1 "  %(xscalefile)
+                xdscc12_cmd2 = "xdscc12 -dmax 4.0 -nbin 1 %s >xdscc12.log 2>&1 "  %(xscalefile)
                 sub.run(xdscc12_cmd2, shell=True)
             #------------------------------------extracting results from xdscc12.log------------
             try:
@@ -771,6 +778,13 @@ class Merging(Abstract):
                         else:
                             fh.write(_all[i])
                 fh.close()
+                
+                res_cut = self.jshandle.get("resolution", "1.0") 
+                sed_cmd = " sed -i '/INPUT_FILE/a INCLUDE_RESOLUTION_RANGE=50.0 %s' XSCALE.INP.rename_me" %(res_cut)
+                try:
+                    run_command("Scale&Merge", os.getcwd(), self.jshandle['user'], sed_cmd, None)
+                except KeyError:
+                    sub.run(sed_cmd, shell=True)
 
                 # reset loop parameter & write last file
                 delta_cc12 = (_all[i + 1]).split()
