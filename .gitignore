@@ -1,5 +1,6 @@
 .git/
 *.pyc
 adm_serial-xtal/
+execute/
 .idea/
 merge.log

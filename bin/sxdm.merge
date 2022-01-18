@@ -10,10 +10,10 @@
 #/sls/X06DA/data/e19370/Data10/20210818/Lyso_s4/minisets_20210818_144530 \
 #/sls/X06DA/data/e19370/Data10/20210818/Lyso_s2/minisets_20210818_140308 "
 
-HKLPATHS="/sls/MX/Data10-staff/e19370/20210818//Lyso_s3/minisets_20210818_142811
-/sls/MX/Data10-staff/e19370/20210818/Lyso_s1/minisets_20210818_133733 \
-/sls/MX/Data10-staff/e19370/20210818/Lyso_s4/minisets_20210818_144530 \
-/sls/MX/Data10-staff/e19370/20210818/Lyso_s2/minisets_20210818_140308  "
+#HKLPATHS="/sls/MX/Data10-staff/e19370/20210818//Lyso_s3/minisets_20210818_142811
+#/sls/MX/Data10-staff/e19370/20210818/Lyso_s1/minisets_20210818_133733 \
+#/sls/MX/Data10-staff/e19370/20210818/Lyso_s4/minisets_20210818_144530 \
+#/sls/MX/Data10-staff/e19370/20210818/Lyso_s2/minisets_20210818_140308  "
 
 # problematic data set with 37 data sets 
 #HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
@@ -83,75 +83,47 @@ HKLPATHS="/sls/MX/Data10-staff/e19370/20210818//Lyso_s3/minisets_20210818_142811
 #/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_151211 "
 #
 
-#HKLPATHS="/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-f \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E9259-1\ 
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_D3199 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F1199-1\ 
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-2 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-e \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E3199 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F1199-2 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-D \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_C3189 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-3 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G3199-2 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8189 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G3199-1 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-1 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-2 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-2-B \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_H9259 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-2-B \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_C6189 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G9259 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-4 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-3 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G4199-1 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_H11259-2 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F10259-1 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_G10259-1 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F9259-5 \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_E8199-1-B \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-1-b \
-#/das/home/assman_g/p19370/test_script2.7/serial_script_test/proc_518/mGlu5_F2199-4  "
-
-
-#HKLPATHS="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/7
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/6
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/3
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/11"
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/14
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/5
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/2
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/4
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/1
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/13
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/16
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/9
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/12
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/15
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/10
-#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/8 "
+HKLPATHS="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/7
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/6
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/3
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/11
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/14
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/5
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/2
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/4
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/1
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/13
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/16
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/9
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/12
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/15
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/10
+/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/8 "
 
 
 
 
 Method="serial-xtal"
-ref=" "
+ref="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/7/minisets_20190202_120349/xtal_7/XDS_ASCII.HKL"
 
 
 
 #-----------------------------ENVIRONMENTS---------------------
+export PYTHONPATH=$PYTHONPATH:'/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm/src'
 #export PYTHONPATH=$PYTHONPATH:'/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm/src'
-export SXDM="/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm"
+#export SXDM="/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm"
 
 
 
 
+#OPTIONAL PARAMS for MERGING PROCESS, 
+#--res_cut, default 2.0
+#--reference $ref, default first data set 
+#--friedel , default "FALSE"
+#--reject, default 0.01   (percentage of total data sets rejected per rejection iteration)
 
 
-python run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
+#Actual Execution 
+python run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE" 
 #python /sls/MX/applications/git/sxdm_py38/run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
 

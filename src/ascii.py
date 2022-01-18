@@ -205,6 +205,7 @@ class ASCII(Abstract):
         linkname = "data.hkl"
         res = inData.get('resolution', 0.0)
         form = inData['mtz_format']
+
         if os.path.isfile(fname):
             try:
                 os.symlink(fname, linkname)
@@ -233,22 +234,26 @@ class ASCII(Abstract):
         fh.close()
         logger.info("running xdsconv")
 
+
         fh = open("xdsconv_f2mtz.sh", 'w')
         input_file = """#!/bin/bash
         xdsconv 
         f2mtz HKLOUT %s <F2MTZ.INP 
         """ %mtzname
+
+
         fh.write(input_file)
         fh.close()
         xdsconv_cmd = './xdsconv_f2mtz.sh'
         change_permission = sub.call(["chmod", "755", "xdsconv_f2mtz.sh"])
         #run_command("sxdm", os.getcwd(), inData['user'], xdsconv_cmd, 'xdsconv_f2mtz.log')
-	
+
         try:
             run_command("sxdm", os.getcwd(), inData['user'], xdsconv_cmd, 'xdsconv_f2mtz.log')
         except KeyError:
-            sub.call(xdsconv_cmd, shell=True)
-            logger.info('f2mtz_error:{}'.format('xdsconv + f2mtz did run for offline processing, check with developer\n'))
+            xdsconv_cmd1 = './xdsconv_f2mtz.sh > xdsconv_f2mtz.log'
+            sub.call(xdsconv_cmd1, shell=True)
+            #logger.info('f2mtz_error:{}'.format('xdsconv + f2mtz did run for offline processing, check with developer\n')
         os.remove('temp.hkl')
         return
 

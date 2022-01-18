@@ -251,7 +251,6 @@ class CCestimator(Abstract):
             CC=distance.cdist(self.results['pcc_arr_symm'],self.results['pcc_arr_symm'],'euclidean')
             clustering = DBSCAN(eps=np.median(CC[np.triu_indices(len(CC), k=1)]), min_samples=1).fit(CC)
             pclu=len(set(clustering.labels_))
-            print(pclu, "pclu")
             logger.info('truncation level for pCC dendrogramm acording to cell constants was estimated')
             if pclu < p1:
                 p1=pclu
@@ -259,7 +258,7 @@ class CCestimator(Abstract):
                 logger.info('truncation level for dendrogram is smaller than the estimated trunc levelby clustering')
 
 
-            p1 =5
+            #p1 =5
             # assigning labels for dendrogram function
             dn_wo_trunc = sch.dendrogram(Y, labels = self.results['data_points'], no_plot=True)
             dn_w_trunc = sch.dendrogram(Y, p = p1,truncate_mode='lastp', no_plot=True)

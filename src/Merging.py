@@ -146,9 +146,7 @@ class Merging(Abstract):
             else:
                 pass
             subadm = self.getOutputDirectory() / outname / subadm
-            #print(type(subadm))
             self.results['merge_output_path'] = subadm
-            #print(type(self.results['merge_output_path']))
             subadm.mkdir(parents=True, exist_ok=True)
             logger.info("merging folder subadm: {}".format(subadm))
             os.chdir(subadm)
@@ -238,14 +236,17 @@ class Merging(Abstract):
         return
 
     def indexing_(self):
-        #self.results['reference'] = self.jshandle.get('reference', self.results['hklpaths_found'][0]) # not working GA check
-        self.results['reference'] = self.results['hklpaths_found'][0]
-        temp_list =[]
-        temp_list.append(self.results['hklpaths_found'][0])
-        #print(len(self.results['hklpaths_found']))
+        temp_list = []
+        if self.jshandle.get('reference'):
+            self.results['reference'] = self.jshandle.get('reference')
+            start=0
+        else:
+            self.results['reference'] =self.results['hklpaths_found'][0]
+            temp_list.append(self.results['hklpaths_found'][0])
+            start = 1
 
         try:
-            for ii in range(1, len(self.results['hklpaths_found'])):
+            for ii in range(start, len(self.results['hklpaths_found'])):
                 if index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
                     temp_list.append(self.results['hklpaths_found'][ii])
                 else:
@@ -263,8 +264,7 @@ class Merging(Abstract):
 
         friedel = self.jshandle.get("friedels_law", "TRUE")
         reso_cut = self.jshandle.get("resolution", "1.0")
-        reference = inData.get('reference', self.results['hklpaths_found'][0])
-        #print(reference)
+        reference = self.results['reference']
         try:
             os.symlink(reference,'reference.HKL')
         except OSError as e:
@@ -277,7 +277,6 @@ class Merging(Abstract):
         fh.write("MAXIMUM_NUMBER_OF_PROCESSORS=%d\n" %self.jshandle.get('nproc', 12))
         fh.write("SAVE_CORRECTION_IMAGES=FALSE\n")
         fh.write("FRIEDEL'S_LAW=%s\n\n" %friedel)
-        #fh.write('REFERENCE_DATA_SET= %s\n' %reference)
         fh.write("REFERENCE_DATA_SET= reference.HKL\n")    #GA changed
         try:
             fh.write("SPACE_GROUP_NUMBER=%s\n" %inData['space_group'])
@@ -385,7 +384,6 @@ class Merging(Abstract):
             indict = {"LPfile": "XSCALE.LP"}
             xscale_parse = OutputParser(indict)
             xscale_parse.parse_xscale_output(indict)
-            #logger.info('stat_dict:{}'.format(xscale_parse.results))
             self.results['nSAD_xscale_stats'] = xscale_parse.results
             shutil.copyfile('XSCALE.HKL', 'nSAD.HKL')
             shutil.copyfile('XSCALE.LP', 'nSAD.LP')
@@ -449,7 +447,6 @@ class Merging(Abstract):
                 indict = {"LPfile": "XSCALE.LP"}
                 xscale_parse = OutputParser(indict)
                 xscale_parse.parse_xscale_output(indict)
-                #print( self.results['stat'])
                 logger.info('stat_dict:{}'.format(xscale_parse.results))
                 self.results['no_selection'] = xscale_parse.results
                 shutil.copyfile("XSCALE.INP", "noSelect.INP")
@@ -623,7 +620,8 @@ class Merging(Abstract):
 
         # calculate how many data sets should be removed (10% of the total range)
         no_of_datasets = len(self.results['hklpaths_found'])
-        no_of_datasets_remove = int(no_of_datasets * 0.1)
+        reject_percentage = self.jshandle.get("reject_perc", "0.01")
+        no_of_datasets_remove = int(no_of_datasets * float(reject_percentage))
         if (no_of_datasets_remove < 1):
             no_of_datasets_remove = 1
         # remove data sets %
@@ -721,6 +719,14 @@ class Merging(Abstract):
         self.results['xdscc12'] ={}
         self.results['xdscc12']['xdscc12_cc12'] = []
         self.results['xdscc12']['xdscc12_cc12ano'] = []
+        # calculate how many data sets should be removed (10% of the total range)
+        reject_percentage = self.jshandle.get("reject_perc", "0.01")
+        no_of_datasets = len(self.results['hklpaths_found'])
+        no_of_datasets_remove = int(no_of_datasets * float(reject_percentage))
+        if (no_of_datasets_remove < 1):
+            no_of_datasets_remove = 1
+        self.results["number_datasets_removed"] = no_of_datasets_remove
+        logger.info("number of data sets removed per rejection step: %s" %no_of_datasets_remove)
         while delta_cc12 <0:
             reject_iterations = reject_iterations + 1
             xdscc12_cmd1 = "xdscc12 -dmax 4.0 -nbin 1 %s" %(xscalefile)
@@ -760,12 +766,7 @@ class Merging(Abstract):
                 logger.info('OSError:{}'.format(err))
                 self.setFailure()
 
-            # calculate how many data sets should be removed (10% of the total range)
-            no_of_datasets = len(self.results['hklpaths_found'])
-            no_of_datasets_remove= int(no_of_datasets * 0.01)
-            if(no_of_datasets_remove <1):
-                no_of_datasets_remove = 1
-            self.results["number_datasets_removed"]= no_of_datasets_remove
+
             #remove data sets %
             try:
                 fh = open("XSCALE.INP.rename_me", "r")
@@ -940,27 +941,28 @@ class Merging(Abstract):
         '''
         plots results from xdscc12 and isocluster
         '''
-        print("this is in plot")
         cm = 1/2.54
         plt.figure(num=None, figsize=(21.0*cm,29.7*cm), dpi=100)
         #-----------------------------------------------------------------------------
         plt.subplot2grid((4, 2), (0, 0), rowspan=1, colspan=2)
         y= self.results['xdscc12']['xdscc12_cc12']
+        x = np.arange(0,len(y), step =1)
         if len(y) > 1000:
-            x = np.arange(0,len(y), step =100)
+            x_ticks = np.arange(0,len(y), step =100)
         elif len(y) > 100:
-            x = np.arange(0,len(y), step =10)
+            x_ticks = np.arange(0,len(y), step =10)
+        elif len(y) >15:
+            x_ticks = np.arange(0,len(y), step =5)
         else:
-            x = np.arange(0,len(y), step =1)
+            x_ticks = np.arange(0,len(y), step =1)
         y_float =list(np.float_(y))
         plt.scatter(x,y_float)
         plt.plot(x,y_float)
         plt.ylabel('CC1/2 [%]')
         plt.xlabel('Rejection Iteration')
         plt.title(" A: Change of CC$_{1/2}$ (isomorphous signal)")
-        plt.xticks(x)
+        plt.xticks(x_ticks)
         plt.ticklabel_format(useOffset=False, style='plain')
-
         #-------------------------------------------------------------------------
         plt.subplot2grid((4, 2), (1, 0), colspan=2)
         y1 = self.results['xdscc12']['xdscc12_cc12ano']
@@ -970,7 +972,7 @@ class Merging(Abstract):
         plt.ylabel('CC1/2_ano [%]')
         plt.xlabel('Rejection Iteration')
         plt.title(" B: Change of CC$_{1/2\_ano}$ (anomalous signal)")
-        plt.xticks(x)
+        plt.xticks(x_ticks)
         b=3
         plt.ticklabel_format(useOffset=False, style='plain')
         # -----------------------------------------------------------------------
@@ -1004,25 +1006,22 @@ class Merging(Abstract):
         #-----------------------------------------------------------------------
         plt.savefig("results_xdscc12.pdf")
 
-        print("end of plot")
         return None
 
     def aniso_check(self):
-        point_cmd = "pointless -xdsin noSelect.HKL hklout noSelect_point.mtz"
+        point_cmd = "pointless xdsin noSelect.HKL hklout noSelect_point.mtz"
         try:
             run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], point_cmd, 'pointless.log')
         except KeyError:
-            point_cmd1 = "pointless -xdsin noSelect.HKL hklout noSelect_point.mtz > pointless.log"
+            point_cmd1 = "pointless xdsin noSelect.HKL hklout noSelect_point.mtz > pointless.log"
             sub.call(point_cmd1, shell=True)
-        time.sleep(2)
-
+        #time.sleep(2)
         if os.path.isfile(str(self.getOutputDirectory() / "noSelect_point.mtz")):
 
             fh = open("onlymerge.sh", 'w')
             input_file ="""#!/bin/bash
             aimless hklin noSelect_point.mtz hklout noSelect_aim.mtz <<EOF
             ONLYMERGE
-            EOF
             """
             fh.write(input_file)
             try:
@@ -1033,19 +1032,20 @@ class Merging(Abstract):
                 if "BATCH" in col_labels:
                     n_batches = mtz_content.n_batches()
                     fh.write("run 1 batch %d to %d\n" %(1, n_batches))
+                    fh.write("EOF")
                 else:
                     pass
             except (ImportError, RuntimeError) as err:
                 logger.info('iotbx-import-error:{}'.format(err))
                 fh.write("run 1 batch %d to %d\n" %(1, 50))
+                fh.write("EOF")
             fh.close()
             change_permission = sub.call(["chmod", "755", "onlymerge.sh"])
             aim_cmd = "./onlymerge.sh"
-            #aim_cmd = "aimless hklin noSelect_point.mtz hklout noSelect_aim.mtz < onlymerge.inp > aimless.log"
             try:
                 run_command("sxdm", self.getOutputDirectory(), self.jshandle['user'], aim_cmd, "aimless.log")
             except (OSError, TypeError, Exception) as e:
-                aim_cmd1 = aim_cmd + '| tee aimless.log'
+                aim_cmd1 = "./onlymerge.sh >aimless.log"
                 sub.call(aim_cmd1, shell=True)
         else:
             err = "Could be pointless did not run\n"
@@ -1063,7 +1063,6 @@ class Merging(Abstract):
             return
 
         keyword = "Estimated maximum resolution limits"
-
         for lines in _all:
 
             if "Error" in lines:
@@ -1091,9 +1090,12 @@ class Merging(Abstract):
     def create_mtzs(self):
         lst_of_hkls = ['noSelect.HKL','XDSCC12.HKL', 'ISa_Select.HKL', 'Cell_Select.HKL', 'pCC_Select.HKL']
         indata_ascii = {"mtz_format": "CCP4_I+F",
-                        "resolution": float(self.jshandle['resolution']),
-                        "user": self.jshandle['user'],
-                        }
+                        "resolution": float(self.jshandle['resolution'])}
+        try:
+            indata_ascii["user"]= self.jshandle['user']
+        except:
+            indata_ascii["user"]= None
+
         for hklfile in lst_of_hkls:
             if os.path.isfile(hklfile):
                 indata_ascii['xds_ascii'] = hklfile

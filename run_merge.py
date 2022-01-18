@@ -1,11 +1,11 @@
 import os, sys
 import pathlib
 import logging
-from src.Merging import Merging
+from Merging import Merging
 logger = logging.getLogger('sxdm')
 
 def finder(root, expt):
-    #print(len(root))
+    #print(len(root), root)
     path_list =[]
     if expt == 'serial-xtal':
         for ii in range(len(root)):
@@ -47,7 +47,8 @@ def optargs():
     parser.add_argument("--isa_cut", type=str, default='3.0')
     parser.add_argument("--reference", type=str)
     parser.add_argument("--res_cut", type=str, default='2.0')
-    parser.add_argument("--friedel", type=str, default="FALSE")
+    parser.add_argument("--friedel", type=str, default="TRUE")
+    parser.add_argument("--reject", type=str, default='0.01')
     args = parser.parse_args()
     return args
 
@@ -68,6 +69,7 @@ if __name__ == '__main__':
         sys.exit()
 
     inData=dict()
+    #print(hklpath_list)
     # orginally it was pathlist, now xtallist or dirlist (see email shibom)
     inData['xtallist'] = hklpath_list
     inData['experiment'] = op.expt
@@ -75,6 +77,7 @@ if __name__ == '__main__':
     inData['resolution'] = op.res_cut
     inData['friedels_law'] = op.friedel
     inData['running_folder'] = None
+    inData['reject_perc'] = op.reject
 
     
     mm = Merging(inData)
