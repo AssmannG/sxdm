@@ -99,7 +99,7 @@ class Merging(Abstract):
                 "xtals_rejected": {"type": "integer"},
                 "space_group": {"type": "string"},
                 "unit-cell": {"type": "string"},
-                "reference": {"type": "string"},
+                "reference": {"type":"string"},
                 "friedel": {"type": "string"},
                 "anisotropicity": {
                     "type": "array",
@@ -237,14 +237,14 @@ class Merging(Abstract):
 
     def indexing_(self):
         temp_list = []
-        if self.jshandle.get('reference'):
-            self.results['reference'] = self.jshandle.get('reference')
-            start=0
-        else:
+        test = self.jshandle.get("reference")
+        if test == "None": 
             self.results['reference'] =self.results['hklpaths_found'][0]
             temp_list.append(self.results['hklpaths_found'][0])
-            start = 1
-
+            start=1
+        elif test != "None":
+            self.results['reference'] = self.jshandle.get('reference')
+            start = 0
         try:
             for ii in range(start, len(self.results['hklpaths_found'])):
                 if index_check.similar_symmetry(self.results['reference'], self.results['hklpaths_found'][ii]):
@@ -254,7 +254,6 @@ class Merging(Abstract):
             self.results['hklpaths_found'] = temp_list
         except (IndexError, ValueError) as err:
             pass
-
 
         logger.info('MSG: # of cleaned xtals %s' %len(self.results['hklpaths_found']))
         self.results['xtals_after_idx_check'] = len(self.results['hklpaths_found'])
@@ -344,7 +343,6 @@ class Merging(Abstract):
 
     def xscale_for_sad(self):
         self.find_HKLs()
-
         self.outdir_make()
         config = dict()
         if len(self.results['hklpaths_found']) > 0:
