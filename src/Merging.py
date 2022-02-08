@@ -238,10 +238,12 @@ class Merging(Abstract):
     def indexing_(self):
         temp_list = []
         test = self.jshandle.get("reference")
+        # no reference data set provided (online and offline processing), "None" (string), not None (none type)
         if test == "None": 
             self.results['reference'] =self.results['hklpaths_found'][0]
             temp_list.append(self.results['hklpaths_found'][0])
             start=1
+        #offline  + online ,reference data set provided '
         elif test != "None":
             self.results['reference'] = self.jshandle.get('reference')
             start = 0

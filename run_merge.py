@@ -45,7 +45,7 @@ def optargs():
     parser.add_argument("--root", type=str, nargs='+')
     parser.add_argument("--expt", type=str)
     parser.add_argument("--isa_cut", type=str, default='3.0')
-    parser.add_argument("--reference", type=str)
+    parser.add_argument("--reference", type=str,default="None")
     parser.add_argument("--res_cut", type=str, default='2.0')
     parser.add_argument("--friedel", type=str, default="TRUE")
     parser.add_argument("--reject", type=str, default='0.01')
