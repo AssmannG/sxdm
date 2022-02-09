@@ -1084,7 +1084,7 @@ class Merging(Abstract):
                     self.results['anisotropicity'] = aniso_string
 
             else:
-                pass
+                self.results['anisotropicity'] = ""
         return
 
     def create_mtzs(self):
