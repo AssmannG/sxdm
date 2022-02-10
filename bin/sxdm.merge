@@ -1,89 +1,7 @@
 #!/bin/bash
 
-#HKLPATHS="/nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD024A \
-# /nfs/ssx/shbasu/MEmmery/processed/proc_20201107/AD029A" 
-
-#HKLPATHS="/das/work/p16/p16141/raw_data/20201206/PXI/IMISX/proc/HTC-2-6"
-
-#HKLPATHS="/sls/X06DA/data/e19370/Data10/20210818/Lyso_s3/minisets_20210818_142811 \
-#/sls/X06DA/data/e19370/Data10/20210818/Lyso_s1/minisets_20210818_133733 \
-#/sls/X06DA/data/e19370/Data10/20210818/Lyso_s4/minisets_20210818_144530 \
-#/sls/X06DA/data/e19370/Data10/20210818/Lyso_s2/minisets_20210818_140308 "
-
-#HKLPATHS="/sls/MX/Data10-staff/e19370/20210818//Lyso_s3/minisets_20210818_142811
-#/sls/MX/Data10-staff/e19370/20210818/Lyso_s1/minisets_20210818_133733 \
-#/sls/MX/Data10-staff/e19370/20210818/Lyso_s4/minisets_20210818_144530 \
-#/sls/MX/Data10-staff/e19370/20210818/Lyso_s2/minisets_20210818_140308  "
-
-# problematic data set with 37 data sets 
-#HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125822 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130856 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130020 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130438 "
-
-#HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_131258 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125822 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130856 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130020 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_130438 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_124855 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125612 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_125409 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP10_IMISX/minisets_20210314_124552 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP3_IMISX/minisets_20210314_123855 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP3_IMISX/minisets_20210314_123607 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP3_IMISX/minisets_20210314_123006 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP3_IMISX/minisets_20210314_122505 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_120131 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_121127 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_121830 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_115933 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP2_IMISX/minisets_20210314_115538 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP1_IMISX/minisets_20210314_132411 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP1_IMISX/minisets_20210314_133046 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/IMISX/EP1_IMISX/minisets_20210314_133433 "
-#
-
-
-#HKLPATHS="/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_144554 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_140032 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_135811 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_144834 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_140203 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_144329 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_140712 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_140421 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_144027 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_20mins/minisets_20210314_135551 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_141443 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_142102 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_145158 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_145422 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_141118 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_145954 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_141810 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_40mins/minisets_20210314_145654 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_10mins/minisets_20210314_154959 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_10mins/minisets_20210314_155418 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_10mins/minisets_20210314_154407 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_80mins/minisets_20210314_152434 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_80mins/minisets_20210314_151829 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_80mins/minisets_20210314_152134 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_143412 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_143635 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_142902 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_143230 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_142456 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_60mins/minisets_20210314_143053 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_120mins/minisets_20210314_153208 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_150909 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_150423 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_151532 \
-#/das/work/units/mx/p16141/raw_data/20210314_CY_3CL15Redo/X06SA_0314/loop/EP2_70mins/minisets_20210314_151211 "
-#
-
-HKLPATHS="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/7
+#Example data set paths, uncomment or delete and put your data set paths
+HKLPATHS="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/
 /das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/6
 /das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/3
 /das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/11
@@ -102,18 +20,12 @@ HKLPATHS="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/7
 
 
 
-
 Method="serial-xtal"
-ref="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/7/minisets_20190202_120349/xtal_7/XDS_ASCII.HKL"
-
+ref="/path/to/my/reference/file/XDS_ASCII.HKL"
 
 
 #-----------------------------ENVIRONMENTS---------------------
-export PYTHONPATH=$PYTHONPATH:'/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm/src'
-#export PYTHONPATH=$PYTHONPATH:'/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm/src'
-#export SXDM="/das/home/assman_g/p19370/test_script3.8/sxdm_shibom/sxdm"
-
-
+export PYTHONPATH=$PYTHONPATH:/sls/MX/applications/sxdm_py38/all-beamlines/stable
 
 
 #OPTIONAL PARAMS for MERGING PROCESS, 
@@ -124,6 +36,6 @@ export PYTHONPATH=$PYTHONPATH:'/das/home/assman_g/p19370/test_script3.8/sxdm_shi
 
 
 #Actual Execution 
+#Example with reference:  python run_merge.py --root $HKLPATHS --expt $Method --reference $ref
 python run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE" 
-#python /sls/MX/applications/git/sxdm_py38/run_merge.py --root $HKLPATHS --expt $Method  --res_cut "2.0" --friedel "TRUE"
 
