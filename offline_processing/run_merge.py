@@ -16,8 +16,11 @@ def finder(root, expt):
     elif expt == 'native-sad':
         for ii in range(len(root)):
             dirs = pathlib.Path(root[ii])
-            paths = dirs.glob('set*')
-            path_list.append(paths)
+            posix = list(dirs.glob('set*/*/*'))
+            path_list += list(map(lambda x: str(x), posix))
+            #paths = dirs.glob('set*')
+            #path_list.append(paths)
+
     return path_list
 
 def get_paths_xscale():
@@ -79,7 +82,6 @@ if __name__ == '__main__':
     inData['running_folder'] = None
     inData['reject_perc'] = op.reject
 
-    
     mm = Merging(inData)
     mm.run_()
     '''for i in mm.results:

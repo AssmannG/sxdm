@@ -385,20 +385,23 @@ class Merging(Abstract):
             xscale_parse = OutputParser(indict)
             xscale_parse.parse_xscale_output(indict)
             self.results['nSAD_xscale_stats'] = xscale_parse.results
-            shutil.copyfile('XSCALE.HKL', 'nSAD.HKL')
-            shutil.copyfile('XSCALE.LP', 'nSAD.LP')
+            indata_ascii = {"mtz_format": "CCP4_I+F", "resolution": float(self.jshandle.get('resolution', "1.0"))}
+            indata_ascii['xds_ascii'] = "XSCALE.HKL"
+            hkl = ASCII(indata_ascii)
+            hkl.get_data(indata_ascii)
+            hkl.xdsconv(indata_ascii)
 
         except Exception as err:
             logger.error(err)
             self.setFailure()
 
-        self.Isa_select(config)
-        shutil.copyfile('XSCALE.LP', 'ISa_Select.LP')
-        shutil.copyfile('XSCALE.HKL', 'ISa_Select.HKL')
-        indict = {"LPfile": "ISa_Select.LP"}
-        xscale_parse = OutputParser(indict)
-        xscale_parse.parse_xscale_output(indict)
-        self.results['ISa_selection'] = xscale_parse.results
+        #self.Isa_select(config)
+        #shutil.copyfile('XSCALE.LP', 'ISa_Select.LP')
+        #shutil.copyfile('XSCALE.HKL', 'ISa_Select.HKL')
+        #indict = {"LPfile": "ISa_Select.LP"}
+        #xscale_parse = OutputParser(indict)
+        #xscale_parse.parse_xscale_output(indict)
+        #self.results['ISa_selection'] = xscale_parse.results
         return
 
     def xscale_for_sx(self):
@@ -1108,7 +1111,6 @@ class Merging(Abstract):
         return
 
     def run_(self):
-
         try:
             # jsonschema.validate(instance=Merging.jshandle, schema=Merging.getInDataScheme())
             if self.jshandle['experiment'] == 'native-sad':
@@ -1152,7 +1154,6 @@ if __name__ == '__main__':
     mm = Merging(inData)
     # val = jsonschema.Draft3Validator(Merging.getInDataScheme()).is_valid(inData)
     # print(val)
-
     mm.run_()
     if mm.is_success():
         mm.writeOutputData(mm.results)

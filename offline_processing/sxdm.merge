@@ -1,32 +1,32 @@
 #!/bin/bash
 
 #Example data set paths, uncomment or delete and put your data set paths
-HKLPATHS="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/6
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/3
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/11
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/14
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/5
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/2
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/4
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/1
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/13
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/16
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/9
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/12
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/15
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/10
-/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/8 "
+#HKLPATHS="/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/6
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/3
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/11
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/14
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/5
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/2
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/4
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/1
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/13
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/16
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/9
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/12
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/15
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/10
+#/das/work/units/mx/p16141/Gtacr1/GAR1_merge/proc_all/8 "
 
+HKLPATHS="/sls/X06DA/Data10-staff/e14965/20220210/lyso_14"
 
-
-Method="serial-xtal"
+Method="native-sad"
+#Method="serial-xtal"
 ref="/path/to/my/reference/file/XDS_ASCII.HKL"
 
 
 #-----------------------------ENVIRONMENTS---------------------
 export PYTHONPATH=$PYTHONPATH:/sls/MX/applications/sxdm_py38/all-beamlines/stable
-
 
 #OPTIONAL PARAMS for MERGING PROCESS, 
 #--res_cut, default 2.0
