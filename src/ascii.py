@@ -232,7 +232,6 @@ class ASCII(Abstract):
         fh.write("INCLUDE_RESOLUTION_RANGE=50 %f\n" %res)
         fh.write("GENERATE_FRACTION_OF_TEST_REFLECTIONS= 0.05\n")
         fh.close()
-        logger.info("running xdsconv")
 
 
         fh = open("xdsconv_f2mtz.sh", 'w')
@@ -246,14 +245,12 @@ class ASCII(Abstract):
         fh.close()
         xdsconv_cmd = './xdsconv_f2mtz.sh'
         change_permission = sub.call(["chmod", "755", "xdsconv_f2mtz.sh"])
-        #run_command("sxdm", os.getcwd(), inData['user'], xdsconv_cmd, 'xdsconv_f2mtz.log')
 
         try:
             run_command("sxdm", os.getcwd(), inData['user'], xdsconv_cmd, 'xdsconv_f2mtz.log')
         except KeyError:
             xdsconv_cmd1 = './xdsconv_f2mtz.sh > xdsconv_f2mtz.log'
             sub.call(xdsconv_cmd1, shell=True)
-            #logger.info('f2mtz_error:{}'.format('xdsconv + f2mtz did run for offline processing, check with developer\n')
         os.remove('temp.hkl')
         return
 

@@ -172,6 +172,7 @@ class Merging(Abstract):
         return sortlist
 
     def find_HKLs(self):
+        self.results['abort'] = False
         hklpaths = []
         xtallist = self.jshandle.get('xtallist', [])
         #isXtal = self.jshandle.get('isXtal', False) , use that if dirlist provided
@@ -211,7 +212,7 @@ class Merging(Abstract):
         self.results['xtals_found'] = len(hklpaths)
         if len(hklpaths) <= 1:
             logger.info("only one data set left, merging will be aborted")
-            self.setFailure
+            self.results['abort'] = True
         else:
             pass
 
@@ -353,6 +354,9 @@ class Merging(Abstract):
 
     def xscale_for_sad(self):
         self.find_HKLs()
+        if self.results['abort']:
+            self.results = None
+            return
         self.outdir_make()
         config = dict()
         if len(self.results['hklpaths_found']) > 0:
@@ -388,11 +392,6 @@ class Merging(Abstract):
         except KeyError:
             sub.call(Merging._command, shell=True)
 
-        try:
-            indata_ascii["user"]=self.jshandle['user']
-        except KeyError:
-            indata_ascii["user"]=None
-
 
         try:
             indict = {"LPfile": "XSCALE.LP"}
@@ -401,8 +400,12 @@ class Merging(Abstract):
             self.results['nSAD_xscale_stats'] = xscale_parse.results
             indata_ascii = {"mtz_format": "CCP4_I+F", "resolution": float(self.jshandle.get('resolution', "1.0"))}
             indata_ascii['xds_ascii'] = "XSCALE.HKL"
+            try:
+                indata_ascii["user"]=self.jshandle['user']
+            except KeyError:
+                indata_ascii["user"]=None
             hkl = ASCII(indata_ascii)
-            xhkl.get_data(indata_ascii)
+            hkl.get_data(indata_ascii)
             hkl.xdsconv(indata_ascii)
 
         except Exception as err:
