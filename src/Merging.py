@@ -192,20 +192,28 @@ class Merging(Abstract):
             logger.info('MSG: {}'.format(msg))
 
             for path in xtallist:
-                filepath = os.path.join(path, "XDS_ASCII.HKL")
-                if os.path.isfile(filepath):
-                    hklpaths.append(filepath)
-
-                elif os.path.isfile(path) and path.endswith('.HKL'):
-                    hklpaths.append(path)
-
+                if path:
+                    logger.info("path is path, not none")
+                    filepath = os.path.join(path, "XDS_ASCII.HKL")
+                    if os.path.isfile(filepath):
+                        hklpaths.append(filepath)
+                    elif os.path.isfile(path) and path.endswith('.HKL'):
+                        hklpaths.append(path)
+                    else:
+                        err = "couldn't find XDS_ASCII.HKLs %s" % filepath
+                        logger.info('Error:{}'.format(err))
                 else:
-                    err = "couldn't find XDS_ASCII.HKLs %s" % filepath
-                    logger.info('Error:{}'.format(err))
+                    logger.info("data set must be none")
         except KeyError as e:
             logger.error(e)
             self.setFailure()
+
         self.results['xtals_found'] = len(hklpaths)
+        if len(hklpaths) <= 1:
+            logger.info("only one data set left, merging will be aborted")
+            self.setFailure
+        else:
+            pass
 
         self.results['hklpaths_found'] = hklpaths
         return
@@ -381,6 +389,12 @@ class Merging(Abstract):
             sub.call(Merging._command, shell=True)
 
         try:
+            indata_ascii["user"]=self.jshandle['user']
+        except KeyError:
+            indata_ascii["user"]=None
+
+
+        try:
             indict = {"LPfile": "XSCALE.LP"}
             xscale_parse = OutputParser(indict)
             xscale_parse.parse_xscale_output(indict)
@@ -388,7 +402,7 @@ class Merging(Abstract):
             indata_ascii = {"mtz_format": "CCP4_I+F", "resolution": float(self.jshandle.get('resolution', "1.0"))}
             indata_ascii['xds_ascii'] = "XSCALE.HKL"
             hkl = ASCII(indata_ascii)
-            hkl.get_data(indata_ascii)
+            xhkl.get_data(indata_ascii)
             hkl.xdsconv(indata_ascii)
 
         except Exception as err:
